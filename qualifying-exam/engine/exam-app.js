@@ -1,5 +1,6 @@
 /**
  * exam-app.js — 正式考试作答页
+ * 答完即显示对错与解析（单选/判断点选即出；多选需点「确认本题」）
  */
 (function () {
   const TYPE_LABEL = { judge: "判断", single: "单选", multi: "多选" };
@@ -9,6 +10,25 @@
   let paper = null;
   let timer = null;
   let submitting = false;
+
+  function escapeHtml(s) {
+    return String(s)
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;");
+  }
+
+  function ensureRevealed() {
+    if (!paper.revealed || paper.revealed.length !== paper.questions.length) {
+      paper.revealed = paper.questions.map(function (_, i) {
+        const q = paper.questions[i];
+        const ans = paper.answers[i] || [];
+        if (q.type === "multi") return false;
+        return ans.length > 0;
+      });
+    }
+  }
 
   function ensurePaper() {
     const existing = ExamStorage.loadPaper();
@@ -25,6 +45,9 @@
       return null;
     }
     paper = ExamDraw.drawExam(all);
+    paper.revealed = paper.questions.map(function () {
+      return false;
+    });
     ExamStorage.savePaper(paper);
     return paper;
   }
@@ -37,22 +60,37 @@
     return paper.answers[i] || [];
   }
 
+  function isRevealed(i) {
+    return !!(paper.revealed && paper.revealed[i]);
+  }
+
   function setAnswer(i, arr) {
     paper.answers[i] = ExamScoring.normalize(arr);
     save();
     renderSheet();
   }
 
+  function reveal(i) {
+    ensureRevealed();
+    paper.revealed[i] = true;
+    save();
+  }
+
   function renderSheet() {
+    ensureRevealed();
     const grid = document.getElementById("sheet-grid");
     grid.innerHTML = paper.questions
       .map(function (q, i) {
         const answered = (paper.answers[i] || []).length > 0;
+        const shown = isRevealed(i);
+        const ok = shown && ExamScoring.scoreQuestion(q, paper.answers[i] || []).correct;
         const flagged = !!paper.flags[i];
         const cur = i === paper.currentIndex;
         const cls = [
           "sheet-btn",
           answered ? "is-answered" : "",
+          shown && ok ? "is-right" : "",
+          shown && !ok ? "is-wrong" : "",
           flagged ? "is-flagged" : "",
           cur ? "is-current" : "",
         ]
@@ -71,24 +109,93 @@
       .join("");
   }
 
+  function applyFeedbackUI(i) {
+    const q = paper.questions[i];
+    const user = getAnswer(i);
+    const ok = ExamScoring.scoreQuestion(q, user).correct;
+    const card = document.getElementById("question-card");
+
+    document.querySelectorAll("#options .option").forEach(function (el) {
+      const oi = Number(el.getAttribute("data-oi"));
+      el.classList.remove("is-selected", "is-correct", "is-wrong");
+      if (q.answer.indexOf(oi) !== -1) el.classList.add("is-correct");
+      if (user.indexOf(oi) !== -1 && q.answer.indexOf(oi) === -1) el.classList.add("is-wrong");
+      const input = el.querySelector("input");
+      if (input) input.disabled = true;
+      el.classList.add("is-locked");
+    });
+
+    let fb = document.getElementById("exam-feedback");
+    if (!fb) {
+      fb = document.createElement("div");
+      fb.id = "exam-feedback";
+      card.appendChild(fb);
+    }
+    fb.hidden = false;
+    fb.className = "feedback " + (ok ? "feedback--ok" : "feedback--bad");
+    fb.innerHTML =
+      (ok ? "回答正确。" : "回答错误。") +
+      " 正确答案：" +
+      q.answer
+        .map(function (ai) {
+          return OPTION_LETTERS[ai];
+        })
+        .join("、") +
+      '<div class="explain">' +
+      escapeHtml(q.explain || "") +
+      "</div>";
+
+    const confirmBtn = document.getElementById("btn-confirm-answer");
+    if (confirmBtn) confirmBtn.hidden = true;
+  }
+
+  function syncFromInputs() {
+    const i = paper.currentIndex;
+    if (isRevealed(i)) return;
+    const q = paper.questions[i];
+    const inputs = document.querySelectorAll("#options input");
+    const selected = [];
+    inputs.forEach(function (inp) {
+      if (inp.checked) selected.push(Number(inp.value));
+    });
+    if (q.type !== "multi" && selected.length > 1) {
+      selected.splice(0, selected.length - 1);
+    }
+    setAnswer(i, selected);
+    document.querySelectorAll("#options .option").forEach(function (el) {
+      const oi = Number(el.getAttribute("data-oi"));
+      el.classList.toggle("is-selected", selected.indexOf(oi) !== -1);
+    });
+
+    if (q.type !== "multi" && selected.length > 0) {
+      reveal(i);
+      applyFeedbackUI(i);
+      renderSheet();
+    } else if (q.type === "multi") {
+      const confirmBtn = document.getElementById("btn-confirm-answer");
+      if (confirmBtn) confirmBtn.hidden = selected.length === 0;
+    }
+  }
+
   function renderQuestion() {
+    ensureRevealed();
     const i = paper.currentIndex;
     const q = paper.questions[i];
     const user = getAnswer(i);
     const isMulti = q.type === "multi";
     const inputType = isMulti ? "checkbox" : "radio";
+    const locked = isRevealed(i);
 
     document.getElementById("progress-label").textContent =
       "第 " + (i + 1) + " / " + paper.questions.length + " 题 · " + q.module;
 
-    const card = document.getElementById("question-card");
-    const tip =
-      q.type === "multi"
-        ? '<p class="meta">多选题：请选出所有正确项（全对才得分）</p>'
-        : q.type === "judge"
-          ? '<p class="meta">判断题：选择「正确」或「错误」</p>'
-          : '<p class="meta">单选题：请选择一项</p>';
+    const tip = isMulti
+      ? '<p class="meta">多选题：选出所有正确项后点「确认本题」（全对才得分）</p>'
+      : q.type === "judge"
+        ? '<p class="meta">判断题：点选后立即显示对错与解析</p>'
+        : '<p class="meta">单选题：点选后立即显示对错与解析</p>';
 
+    const card = document.getElementById("question-card");
     card.innerHTML =
       '<div class="q-meta">' +
       '<span class="badge ' +
@@ -125,6 +232,7 @@
             oi +
             '"' +
             (checked ? " checked" : "") +
+            (locked ? " disabled" : "") +
             " />" +
             '<span class="option-label">' +
             OPTION_LETTERS[oi] +
@@ -136,59 +244,49 @@
           );
         })
         .join("") +
-      "</ul>";
+      "</ul>" +
+      (isMulti && !locked
+        ? '<div class="btn-row" style="margin-top:1rem"><button type="button" class="btn btn--primary" id="btn-confirm-answer"' +
+          (user.length ? "" : " hidden") +
+          ">确认本题</button></div>"
+        : "") +
+      '<div id="exam-feedback" hidden></div>';
 
     document.getElementById("btn-prev").disabled = i === 0;
     document.getElementById("btn-next").textContent =
       i === paper.questions.length - 1 ? "最后一题" : "下一题";
-    document.getElementById("btn-flag").textContent = paper.flags[i]
-      ? "取消标记"
-      : "标记";
+    document.getElementById("btn-flag").textContent = paper.flags[i] ? "取消标记" : "标记";
 
-    card.querySelectorAll(".option").forEach(function (el) {
-      el.addEventListener("click", function (e) {
-        if (e.target.tagName === "INPUT") {
-          // 让 change 处理
-          return;
-        }
-        const input = el.querySelector("input");
-        if (isMulti) {
-          input.checked = !input.checked;
-        } else {
-          input.checked = true;
-        }
-        syncFromInputs();
+    if (!locked) {
+      card.querySelectorAll(".option").forEach(function (el) {
+        el.addEventListener("click", function (e) {
+          if (isRevealed(paper.currentIndex)) return;
+          if (e.target.tagName === "INPUT") return;
+          const input = el.querySelector("input");
+          if (isMulti) input.checked = !input.checked;
+          else input.checked = true;
+          syncFromInputs();
+        });
+        el.querySelector("input").addEventListener("change", syncFromInputs);
       });
-      el.querySelector("input").addEventListener("change", syncFromInputs);
-    });
+      const confirmBtn = document.getElementById("btn-confirm-answer");
+      if (confirmBtn) {
+        confirmBtn.addEventListener("click", function () {
+          if (isRevealed(i)) return;
+          if (!getAnswer(i).length) {
+            alert("请至少选择一项");
+            return;
+          }
+          reveal(i);
+          applyFeedbackUI(i);
+          renderSheet();
+        });
+      }
+    } else {
+      applyFeedbackUI(i);
+    }
 
     renderSheet();
-  }
-
-  function syncFromInputs() {
-    const i = paper.currentIndex;
-    const q = paper.questions[i];
-    const inputs = document.querySelectorAll("#options input");
-    const selected = [];
-    inputs.forEach(function (inp) {
-      if (inp.checked) selected.push(Number(inp.value));
-    });
-    if (q.type !== "multi" && selected.length > 1) {
-      selected.splice(0, selected.length - 1);
-    }
-    setAnswer(i, selected);
-    document.querySelectorAll("#options .option").forEach(function (el) {
-      const oi = Number(el.getAttribute("data-oi"));
-      el.classList.toggle("is-selected", selected.indexOf(oi) !== -1);
-    });
-  }
-
-  function escapeHtml(s) {
-    return String(s)
-      .replace(/&/g, "&amp;")
-      .replace(/</g, "&lt;")
-      .replace(/>/g, "&gt;")
-      .replace(/"/g, "&quot;");
   }
 
   function go(i) {
@@ -200,13 +298,11 @@
   function doSubmit(auto) {
     if (submitting) return;
     if (!auto) {
-      const unanswered = paper.questions.filter(function (_, i) {
-        return !(paper.answers[i] && paper.answers[i].length);
+      const unanswered = paper.questions.filter(function (_, idx) {
+        return !(paper.answers[idx] && paper.answers[idx].length);
       }).length;
       const msg =
-        (unanswered
-          ? "还有 " + unanswered + " 题未作答。\n"
-          : "") + "确定交卷？交卷后不可修改。";
+        (unanswered ? "还有 " + unanswered + " 题未作答。\n" : "") + "确定交卷？交卷后不可修改。";
       if (!confirm(msg)) return;
     }
     submitting = true;
@@ -276,7 +372,6 @@
         doSubmit(true);
       },
     });
-    // 每 15 秒持久化一次剩余时间
     setInterval(function () {
       if (paper && timer && !submitting) {
         paper.remainingMs = timer.getRemaining();
@@ -288,6 +383,7 @@
 
   paper = ensurePaper();
   if (!paper) return;
+  ensureRevealed();
   bind();
   renderQuestion();
   startTimer();

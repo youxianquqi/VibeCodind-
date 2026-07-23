@@ -73,7 +73,60 @@ function assert(cond, msg, errs) {
   assert(desktop.hasOptions, "未渲染选项", errs);
   log.push("exam-desktop");
 
-  await page.click(".option");
+  // 回首页核对规则文案
+  await page.goto("http://localhost:5178/", { waitUntil: "networkidle0" });
+  assert(
+    await page.evaluate(() => document.body.innerText.includes("答完一题立即显示对错与解析")),
+    "首页规则应含即时反馈文案",
+    errs
+  );
+  log.push("index-copy");
+  await page.click("a#btn-start");
+  await page.waitForSelector("#sheet-grid .sheet-btn", { timeout: 8000 });
+
+  // 找到一道非多选，或对多选点确认
+  await page.evaluate(async () => {
+    function sleep(ms) {
+      return new Promise((r) => setTimeout(r, ms));
+    }
+    for (let t = 0; t < 20; t++) {
+      const tip = document.querySelector(".question-card .meta")?.textContent || "";
+      const isMulti = tip.includes("多选");
+      const opt = document.querySelector("#options .option");
+      if (opt) opt.click();
+      if (isMulti) {
+        const btn = document.getElementById("btn-confirm-answer");
+        if (btn && !btn.hidden) btn.click();
+      }
+      await sleep(80);
+      const fb = document.getElementById("exam-feedback");
+      if (fb && !fb.hidden && fb.innerText.length > 0) return;
+      // 跳下一题再试
+      const next = document.getElementById("btn-next");
+      if (next && !next.disabled) next.click();
+      await sleep(80);
+    }
+  });
+  await page.waitForSelector("#exam-feedback:not([hidden])", { timeout: 5000 });
+  const instant = await page.evaluate(() => {
+    const fb = document.getElementById("exam-feedback");
+    const locked = document.querySelectorAll("#options input[disabled]").length > 0;
+    const sheetMark =
+      document.querySelector(".sheet-btn.is-right, .sheet-btn.is-wrong") != null;
+    return {
+      hasFb: !!(fb && !fb.hidden && fb.innerText.length > 0),
+      hasExplain: !!(fb && fb.querySelector(".explain")),
+      locked,
+      sheetMark,
+      fbText: (fb?.innerText || "").slice(0, 80),
+    };
+  });
+  assert(instant.hasFb, "答完应立即显示反馈: " + instant.fbText, errs);
+  assert(instant.hasExplain, "反馈中应含解析", errs);
+  assert(instant.locked, "揭晓后选项应锁定", errs);
+  assert(instant.sheetMark, "答题卡应出现对/错色", errs);
+  log.push("instant-feedback");
+
   await page.click("#btn-flag");
   assert(
     await page.evaluate(() => !!document.querySelector(".sheet-btn.is-flagged")),
@@ -219,19 +272,32 @@ function assert(cond, msg, errs) {
   );
   log.push("result-fail");
 
-  // —— 练习 ——
+  // —— 练习（点选即反馈；多选才需确认）——
   await page.goto("http://localhost:5178/practice.html", { waitUntil: "networkidle0" });
   await page.select("#count", "5");
   await page.click("#btn-start");
   await page.waitForSelector("#question-card .option", { timeout: 5000 });
   await page.click(".option");
-  await page.click("#btn-check");
+  await page.waitForFunction(
+    () => {
+      const fb = document.getElementById("feedback");
+      const confirm = document.getElementById("btn-check");
+      if (fb && !fb.hidden && fb.innerText.length > 0) return true;
+      // 多选：点确认
+      if (confirm && !confirm.hidden && !confirm.disabled) {
+        confirm.click();
+        return false;
+      }
+      return false;
+    },
+    { timeout: 5000 }
+  );
   assert(
     await page.evaluate(() => {
       const fb = document.getElementById("feedback");
       return fb && !fb.hidden && fb.innerText.length > 0;
     }),
-    "练习检查应显示反馈",
+    "练习应显示反馈",
     errs
   );
   log.push("practice-ok");

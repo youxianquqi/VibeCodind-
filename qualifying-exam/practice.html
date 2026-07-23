@@ -10,7 +10,7 @@
     <div class="wrap">
       <p class="meta"><a href="index.html">← 首页</a></p>
       <h1>练习模式</h1>
-      <p class="lead" id="mode-lead">即时反馈。可选全题库或错题本。</p>
+      <p class="lead" id="mode-lead">点选即出对错与解析（多选需确认）。可选全题库或错题本。</p>
 
       <section class="card" id="setup-card">
         <h2>设置</h2>
@@ -44,7 +44,7 @@
         <article class="question-card" id="question-card"></article>
         <div id="feedback" hidden></div>
         <div class="btn-row">
-          <button type="button" class="btn btn--primary" id="btn-check">检查</button>
+          <button type="button" class="btn btn--primary" id="btn-check" hidden>确认本题</button>
           <button type="button" class="btn" id="btn-next" hidden>下一题</button>
           <button type="button" class="btn btn--ghost" id="btn-remove" hidden>移出错题本</button>
         </div>
@@ -126,7 +126,8 @@
           document.getElementById("practice-progress").textContent =
             "练习进度 " + (index + 1) + " / " + queue.length + " · " + q.module;
           document.getElementById("feedback").hidden = true;
-          document.getElementById("btn-check").hidden = false;
+          document.getElementById("btn-check").hidden = !isMulti;
+          document.getElementById("btn-check").disabled = true;
           document.getElementById("btn-next").hidden = true;
           document.getElementById("btn-remove").hidden = true;
           checked = false;
@@ -139,6 +140,9 @@
             "</span><span>" +
             q.module +
             "</span></div>" +
+            '<p class="meta">' +
+            (isMulti ? "多选：选完后点「确认本题」" : "点选后立即出结果") +
+            "</p>" +
             '<p class="q-stem">' +
             escapeHtml(q.stem) +
             "</p>" +
@@ -169,22 +173,9 @@
               const input = el.querySelector("input");
               if (isMulti) input.checked = !input.checked;
               else input.checked = true;
-              syncSelect();
+              onPick();
             });
-            el.querySelector("input").addEventListener("change", syncSelect);
-          });
-        }
-
-        function syncSelect() {
-          const selected = [];
-          document.querySelectorAll("#options input").forEach(function (inp) {
-            if (inp.checked) selected.push(Number(inp.value));
-          });
-          document.querySelectorAll("#options .option").forEach(function (el) {
-            el.classList.toggle(
-              "is-selected",
-              selected.indexOf(Number(el.getAttribute("data-oi"))) !== -1
-            );
+            el.querySelector("input").addEventListener("change", onPick);
           });
         }
 
@@ -196,9 +187,31 @@
           return selected;
         }
 
+        function onPick() {
+          if (checked) return;
+          const q = queue[index];
+          const selected = getUser();
+          document.querySelectorAll("#options .option").forEach(function (el) {
+            el.classList.toggle(
+              "is-selected",
+              selected.indexOf(Number(el.getAttribute("data-oi"))) !== -1
+            );
+          });
+          if (q.type === "multi") {
+            document.getElementById("btn-check").disabled = selected.length === 0;
+            return;
+          }
+          if (selected.length) check();
+        }
+
         function check() {
+          if (checked) return;
           const q = queue[index];
           const user = getUser();
+          if (!user.length) {
+            alert("请先选择答案");
+            return;
+          }
           const r = ExamScoring.scoreQuestion(q, user);
           checked = true;
           const fb = document.getElementById("feedback");
@@ -221,6 +234,8 @@
             if (q.answer.indexOf(oi) !== -1) el.classList.add("is-correct");
             if (user.indexOf(oi) !== -1 && q.answer.indexOf(oi) === -1)
               el.classList.add("is-wrong");
+            const input = el.querySelector("input");
+            if (input) input.disabled = true;
           });
 
           document.getElementById("btn-check").hidden = true;
