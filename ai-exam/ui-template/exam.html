@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>AI 编程考 · 作答中</title>
+    <link rel="stylesheet" href="assets/tokens.css" />
+    <link rel="stylesheet" href="assets/components.css" />
+    <script>
+      (function () {
+        const t = localStorage.getItem("ai_ui_theme");
+        if (t) document.documentElement.setAttribute("data-theme", t);
+      })();
+    </script>
+  </head>
+  <body>
+    <!-- SVG 渐变定义（计时环） -->
+    <svg width="0" height="0" style="position: absolute" aria-hidden="true">
+      <defs>
+        <linearGradient id="ring-grad" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0" stop-color="#6e63f6" />
+          <stop offset="0.5" stop-color="#4d8dff" />
+          <stop offset="1" stop-color="#22d3ee" />
+        </linearGradient>
+      </defs>
+    </svg>
+
+    <div class="exam-shell">
+      <!-- 吸顶工具条 -->
+      <div class="exam-topbar">
+        <div class="exam-topbar__title">
+          <span class="brand__mark" style="width: 30px; height: 30px; border-radius: 9px"><svg class="icon" style="width: 16px; height: 16px"><use href="#i-sparkles"/></svg></span>
+          <strong>AI 编程考试</strong>
+          <span class="meta" id="progress-label">第 1 / 20 题</span>
+        </div>
+
+        <div class="ring">
+          <svg viewBox="0 0 44 44">
+            <circle class="ring__track" cx="22" cy="22" r="19" />
+            <circle class="ring__bar" cx="22" cy="22" r="19" />
+          </svg>
+          <span class="ring__text timer" id="timer">20:00</span>
+        </div>
+
+        <div class="btn-row">
+          <button type="button" class="btn btn--ghost btn--sm" id="btn-flag" data-tip="标记后可在答题卡快速定位">
+            <svg class="icon"><use href="#i-flag"/></svg>标记
+          </button>
+          <button type="button" class="btn btn--danger btn--sm" id="btn-submit">
+            <svg class="icon"><use href="#i-send"/></svg>交卷
+          </button>
+        </div>
+      </div>
+
+      <!-- 题目区 -->
+      <main>
+        <article class="question-card" id="question-card">
+          <div class="stack" style="gap: var(--s-3)">
+            <div class="skeleton" style="height: 22px; width: 30%"></div>
+            <div class="skeleton" style="height: 16px"></div>
+            <div class="skeleton" style="height: 44px"></div>
+            <div class="skeleton" style="height: 44px"></div>
+          </div>
+        </article>
+        <div class="q-nav">
+          <button type="button" class="btn" id="btn-prev"><svg class="icon"><use href="#i-chevron-left"/></svg>上一题</button>
+          <button type="button" class="btn btn--primary" id="btn-next">下一题<svg class="icon"><use href="#i-chevron-right"/></svg></button>
+        </div>
+      </main>
+
+      <!-- 答题卡 -->
+      <aside class="answer-sheet" id="answer-sheet">
+        <h3><svg class="icon"><use href="#i-grid"/></svg>答题卡<span class="sheet-count">0 / 20</span></h3>
+        <div class="sheet-progress"><i></i></div>
+        <div class="sheet-grid" id="sheet-grid"></div>
+        <p class="sheet-legend">
+          <span><i class="legend-dot legend-dot--answered"></i>已答</span>
+          <span><i class="legend-dot legend-dot--flag"></i>标记</span>
+          <span><i class="legend-dot legend-dot--current"></i>当前题</span>
+        </p>
+      </aside>
+    </div>
+
+    <!-- 移动端：答题卡悬浮按钮 -->
+    <button type="button" class="sheet-fab"><svg class="icon"><use href="#i-grid"/></svg>答题卡</button>
+
+    <script src="assets/icons.js"></script>
+    <script src="assets/ui.js"></script>
+    <script src="../bank/loader.js"></script>
+    <script src="../bank/ai-usage.js"></script>
+    <script src="../engine/storage.js"></script>
+    <script src="../engine/scoring.js"></script>
+    <script src="../engine/timer.js"></script>
+    <script src="../engine/draw.js"></script>
+    <script src="../engine/exam-app.js"></script>
+    <script>
+      // 与引擎联动：环形倒计时 + 答题卡进度（MutationObserver，不侵入引擎）
+      AiUI.initExamSync(20 * 60 * 1000);
+    </script>
+  </body>
+</html>

@@ -1,0 +1,55 @@
+/**
+ * 07 · 响应式导航（判据）
+ *
+ * 合法提示：
+ *   display: none | flex | block | …
+ *   @media (min-width: 768px) { … }
+ */
+
+.top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.75rem 0;
+  border-bottom: 1px solid #e7e5e4;
+  margin-bottom: 1rem;
+}
+
+.nav-links a {
+  color: #0f766e;
+  margin-right: 0.75rem;
+  text-decoration: none;
+}
+
+/*
+  TODO F2（注释）
+  「宽度 ≥ 768px」的条件写法是？
+  标准答案：(min-width: 768px)
+  你写：
+  //
+*/
+
+.nav-links {
+  /*
+    TODO F3a · 默认（手机）隐藏导航链接
+      display: none;
+  */
+
+
+}
+
+/*
+  TODO F3b · 桌面显示为横排 Flex
+  完整结构：
+
+  @media (min-width: 768px) {
+    .nav-links {
+      display: flex;
+      gap: 1rem;
+      align-items: center;
+    }
+  }
+*/
+
+

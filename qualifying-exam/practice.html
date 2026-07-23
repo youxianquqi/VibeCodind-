@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>练习模式</title>
+    <link rel="stylesheet" href="shared/exam.css" />
+  </head>
+  <body>
+    <div class="wrap">
+      <p class="meta"><a href="index.html">← 首页</a></p>
+      <h1>练习模式</h1>
+      <p class="lead" id="mode-lead">即时反馈。可选全题库或错题本。</p>
+
+      <section class="card" id="setup-card">
+        <h2>设置</h2>
+        <p>
+          <label>
+            来源
+            <select id="source">
+              <option value="all">全题库</option>
+              <option value="wrong">错题本</option>
+            </select>
+          </label>
+        </p>
+        <p>
+          <label>
+            题量
+            <select id="count">
+              <option value="5">5</option>
+              <option value="10" selected>10</option>
+              <option value="20">20</option>
+            </select>
+          </label>
+        </p>
+        <div class="btn-row">
+          <button type="button" class="btn btn--primary" id="btn-start">开始练习</button>
+          <button type="button" class="btn btn--ghost" id="btn-clear-wrong">清空错题本</button>
+        </div>
+        <p class="meta" id="wrong-count"></p>
+      </section>
+
+      <section id="practice-area" hidden>
+        <article class="question-card" id="question-card"></article>
+        <div id="feedback" hidden></div>
+        <div class="btn-row">
+          <button type="button" class="btn btn--primary" id="btn-check">检查</button>
+          <button type="button" class="btn" id="btn-next" hidden>下一题</button>
+          <button type="button" class="btn btn--ghost" id="btn-remove" hidden>移出错题本</button>
+        </div>
+        <p class="meta" id="practice-progress"></p>
+      </section>
+    </div>
+
+    <script src="bank/loader.js"></script>
+    <script src="bank/m1-semantic.js"></script>
+    <script src="bank/m2-box-position.js"></script>
+    <script src="bank/m3-bfc.js"></script>
+    <script src="bank/m4-flex.js"></script>
+    <script src="bank/m5-grid-responsive.js"></script>
+    <script src="bank/m6-js-basics.js"></script>
+    <script src="bank/m7-dom-events.js"></script>
+    <script src="bank/m8-js-advanced.js"></script>
+    <script src="bank/m9-js-async.js"></script>
+    <script src="bank/m10-ai-usage.js"></script>
+    <script src="engine/storage.js"></script>
+    <script src="engine/scoring.js"></script>
+    <script src="engine/draw.js"></script>
+    <script>
+      (function () {
+        const TYPE_LABEL = { judge: "判断", single: "单选", multi: "多选" };
+        const TYPE_CLASS = {
+          judge: "badge--judge",
+          single: "badge--single",
+          multi: "badge--multi",
+        };
+        const LETTERS = "ABCDEFGH";
+        const params = new URLSearchParams(location.search);
+        if (params.get("mode") === "wrong") {
+          document.getElementById("source").value = "wrong";
+          document.getElementById("mode-lead").textContent = "错题本练习：做对后可移出。";
+        }
+
+        let queue = [];
+        let index = 0;
+        let checked = false;
+
+        function escapeHtml(s) {
+          return String(s)
+            .replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;")
+            .replace(/"/g, "&quot;");
+        }
+
+        function updateWrongCount() {
+          const n = ExamStorage.loadWrongBook().length;
+          document.getElementById("wrong-count").textContent = "错题本当前 " + n + " 题";
+        }
+
+        function pool() {
+          const src = document.getElementById("source").value;
+          if (src === "wrong") return ExamStorage.loadWrongBook();
+          return ExamDraw.collectAllBanks();
+        }
+
+        function start() {
+          const n = Number(document.getElementById("count").value);
+          const p = pool();
+          if (!p.length) {
+            alert(document.getElementById("source").value === "wrong" ? "错题本为空" : "题库为空");
+            return;
+          }
+          queue = ExamDraw.drawPractice(p, n);
+          index = 0;
+          checked = false;
+          document.getElementById("setup-card").hidden = true;
+          document.getElementById("practice-area").hidden = false;
+          render();
+        }
+
+        function render() {
+          const q = queue[index];
+          const isMulti = q.type === "multi";
+          const card = document.getElementById("question-card");
+          document.getElementById("practice-progress").textContent =
+            "练习进度 " + (index + 1) + " / " + queue.length + " · " + q.module;
+          document.getElementById("feedback").hidden = true;
+          document.getElementById("btn-check").hidden = false;
+          document.getElementById("btn-next").hidden = true;
+          document.getElementById("btn-remove").hidden = true;
+          checked = false;
+
+          card.innerHTML =
+            '<div class="q-meta"><span class="badge ' +
+            TYPE_CLASS[q.type] +
+            '">' +
+            TYPE_LABEL[q.type] +
+            "</span><span>" +
+            q.module +
+            "</span></div>" +
+            '<p class="q-stem">' +
+            escapeHtml(q.stem) +
+            "</p>" +
+            '<ul class="options" id="options">' +
+            q.options
+              .map(function (opt, oi) {
+                return (
+                  '<li class="option" data-oi="' +
+                  oi +
+                  '"><input type="' +
+                  (isMulti ? "checkbox" : "radio") +
+                  '" name="pq" value="' +
+                  oi +
+                  '" /><span class="option-label">' +
+                  LETTERS[oi] +
+                  '.</span><span class="option-text">' +
+                  escapeHtml(opt) +
+                  "</span></li>"
+                );
+              })
+              .join("") +
+            "</ul>";
+
+          card.querySelectorAll(".option").forEach(function (el) {
+            el.addEventListener("click", function (e) {
+              if (checked) return;
+              if (e.target.tagName === "INPUT") return;
+              const input = el.querySelector("input");
+              if (isMulti) input.checked = !input.checked;
+              else input.checked = true;
+              syncSelect();
+            });
+            el.querySelector("input").addEventListener("change", syncSelect);
+          });
+        }
+
+        function syncSelect() {
+          const selected = [];
+          document.querySelectorAll("#options input").forEach(function (inp) {
+            if (inp.checked) selected.push(Number(inp.value));
+          });
+          document.querySelectorAll("#options .option").forEach(function (el) {
+            el.classList.toggle(
+              "is-selected",
+              selected.indexOf(Number(el.getAttribute("data-oi"))) !== -1
+            );
+          });
+        }
+
+        function getUser() {
+          const selected = [];
+          document.querySelectorAll("#options input").forEach(function (inp) {
+            if (inp.checked) selected.push(Number(inp.value));
+          });
+          return selected;
+        }
+
+        function check() {
+          const q = queue[index];
+          const user = getUser();
+          const r = ExamScoring.scoreQuestion(q, user);
+          checked = true;
+          const fb = document.getElementById("feedback");
+          fb.hidden = false;
+          fb.className = "feedback " + (r.correct ? "feedback--ok" : "feedback--bad");
+          fb.innerHTML =
+            (r.correct ? "回答正确。" : "回答错误。") +
+            " 正确答案：" +
+            q.answer
+              .map(function (i) {
+                return LETTERS[i];
+              })
+              .join("、") +
+            '<div class="explain">' +
+            escapeHtml(q.explain) +
+            "</div>";
+
+          document.querySelectorAll("#options .option").forEach(function (el) {
+            const oi = Number(el.getAttribute("data-oi"));
+            if (q.answer.indexOf(oi) !== -1) el.classList.add("is-correct");
+            if (user.indexOf(oi) !== -1 && q.answer.indexOf(oi) === -1)
+              el.classList.add("is-wrong");
+          });
+
+          document.getElementById("btn-check").hidden = true;
+          document.getElementById("btn-next").hidden = false;
+          if (document.getElementById("source").value === "wrong" && r.correct) {
+            document.getElementById("btn-remove").hidden = false;
+          }
+          if (!r.correct) {
+            ExamStorage.addWrongQuestions([q]);
+            updateWrongCount();
+          }
+        }
+
+        function next() {
+          if (index >= queue.length - 1) {
+            alert("本组练习结束");
+            location.href = "practice.html";
+            return;
+          }
+          index++;
+          render();
+        }
+
+        document.getElementById("btn-start").addEventListener("click", start);
+        document.getElementById("btn-check").addEventListener("click", check);
+        document.getElementById("btn-next").addEventListener("click", next);
+        document.getElementById("btn-remove").addEventListener("click", function () {
+          ExamStorage.removeWrong(queue[index].id);
+          updateWrongCount();
+          alert("已移出");
+          document.getElementById("btn-remove").hidden = true;
+        });
+        document.getElementById("btn-clear-wrong").addEventListener("click", function () {
+          if (confirm("确定清空错题本？")) {
+            ExamStorage.clearWrongBook();
+            updateWrongCount();
+          }
+        });
+
+        updateWrongCount();
+      })();
+    </script>
+  </body>
+</html>

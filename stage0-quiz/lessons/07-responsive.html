@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <!--
+      TODO F1 在下一行写 viewport（手机按设备宽度显示）
+      完整复制即可（不要改词）：
+      <meta name="viewport" content="width=device-width, initial-scale=1" />
+    -->
+
+    <title>07 · 响应式（判据）</title>
+    <link rel="stylesheet" href="../shared/base.css" />
+    <link rel="stylesheet" href="07-responsive.css" />
+  </head>
+  <body>
+    <div class="wrap">
+      <p class="crumb"><a href="../index.html">路线图</a> · 第 7 课 · 判据</p>
+      <h1>07 · 响应式：viewport + 导航</h1>
+      <p class="lead">先理解「为什么需要 meta」，再写媒体查询。缩小浏览器窗口做自检。</p>
+
+      <section class="lesson">
+        <h2>viewport 是干什么的</h2>
+        <p>
+          手机浏览器默认常按「桌面宽度」缩放页面，字会很小。
+          加了 viewport meta 后，布局宽度 = 设备宽度，才谈得上响应式。
+        </p>
+        <pre class="demo">&lt;meta name="viewport" content="width=device-width, initial-scale=1" /&gt;</pre>
+        <p class="warn">这一行写在 <code>&lt;head&gt;</code> 里，不是写在 CSS 里。</p>
+      </section>
+
+      <section class="lesson">
+        <h2>媒体查询（合法条件示例）</h2>
+        <p>「视口宽度至少 768px」写成：</p>
+        <pre class="demo">@media (min-width: 768px) {
+  /* 桌面样式 */
+}</pre>
+        <p class="note">
+          移动优先思路：默认写手机样式 → 用 <code>min-width</code> 加大屏样式。
+        </p>
+      </section>
+
+      <section class="lesson">
+        <h2>响应式导航思路（本课要写的）</h2>
+        <ol>
+          <li>默认（窄屏）：<code>.nav-links { display: none; }</code> 隐藏链接</li>
+          <li>宽屏：<code>@media (min-width: 768px)</code> 里改成 <code>display: flex</code> 横排</li>
+        </ol>
+        <p class="note">完整汉堡按钮要点 JS；判据只要求「显隐 + 横排」这段 CSS。</p>
+        <p class="ref">
+          参考：
+          <a href="https://developer.mozilla.org/zh-CN/docs/Learn_web_development/Core/CSS_layout/Responsive_design" target="_blank" rel="noopener">MDN 响应式</a>
+        </p>
+      </section>
+
+      <section class="lesson">
+        <h2>预览</h2>
+        <header class="top">
+          <strong>站点名</strong>
+          <nav class="nav-links">
+            <a href="#">首页</a>
+            <a href="#">作品</a>
+            <a href="#">关于</a>
+          </nav>
+        </header>
+        <p>拖窄窗口：链接应消失；拉宽到 ≥768px：链接横排出现。</p>
+      </section>
+
+      <section class="lesson todo-box">
+        <p>TODO</p>
+        <ul>
+          <li>F1：本 HTML 顶部补上 viewport meta</li>
+          <li>F2–F3：打开 <span class="file">lessons/07-responsive.css</span></li>
+        </ul>
+        <p class="check">自检通过后 → <a href="../practice.html">08 综合页</a></p>
+      </section>
+    </div>
+  </body>
+</html>

@@ -1,0 +1,44 @@
+/* 05 答案 */
+
+.item,
+.aside,
+.main {
+  color: #fff;
+  padding: 0.75rem 1rem;
+}
+
+.item {
+  background: #0f766e;
+}
+
+.aside {
+  background: #1e3a5f;
+}
+
+.main {
+  background: #3f6212;
+}
+
+.box {
+  height: 160px;
+  border: 2px dashed #0f766e;
+  background: #fff;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.layout {
+  margin-top: 0.5rem;
+  min-height: 72px;
+  display: flex;
+}
+
+.aside {
+  width: 240px;
+  flex-shrink: 0;
+}
+
+.main {
+  flex: 1;
+}

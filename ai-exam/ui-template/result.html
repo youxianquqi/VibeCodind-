@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>AI 编程考 · 结果</title>
+    <link rel="stylesheet" href="assets/tokens.css" />
+    <link rel="stylesheet" href="assets/components.css" />
+    <script>
+      (function () {
+        const t = localStorage.getItem("ai_ui_theme");
+        if (t) document.documentElement.setAttribute("data-theme", t);
+      })();
+    </script>
+  </head>
+  <body>
+    <!-- SVG 渐变定义（成绩仪表） -->
+    <svg width="0" height="0" style="position: absolute" aria-hidden="true">
+      <defs>
+        <linearGradient id="gauge-grad-ok" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0" stop-color="#34d399" />
+          <stop offset="1" stop-color="#22d3ee" />
+        </linearGradient>
+        <linearGradient id="gauge-grad-bad" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0" stop-color="#fb7185" />
+          <stop offset="1" stop-color="#fbbf24" />
+        </linearGradient>
+      </defs>
+    </svg>
+
+    <header class="topbar">
+      <a class="brand" href="index.html">
+        <span class="brand__mark"><svg class="icon"><use href="#i-sparkles"/></svg></span>
+        <span class="brand__name">AI 编程合格考试</span>
+        <span class="brand__tag">成绩报告</span>
+      </a>
+      <div class="topbar__side">
+        <a class="btn btn--ghost btn--sm" href="index.html"><svg class="icon"><use href="#i-home"/></svg>首页</a>
+        <button type="button" class="btn btn--ghost btn--icon" data-theme-toggle aria-label="切换主题"></button>
+      </div>
+    </header>
+
+    <main class="wrap wrap--wide" style="padding-top: var(--s-6)">
+      <div id="result-root">
+        <div class="stack" style="gap: var(--s-3)">
+          <div class="skeleton" style="height: 300px"></div>
+        </div>
+      </div>
+
+      <div class="btn-row" style="justify-content: center; margin-top: var(--s-6)">
+        <a class="btn" href="index.html"><svg class="icon"><use href="#i-home"/></svg>返回首页</a>
+        <a class="btn btn--primary" href="exam.html" id="btn-retry"><svg class="icon"><use href="#i-rotate"/></svg>再考一次</a>
+        <a class="btn btn--ghost" href="practice.html?mode=wrong"><svg class="icon"><use href="#i-book"/></svg>去错题本</a>
+      </div>
+    </main>
+
+    <footer class="footer">
+      <svg class="icon"><use href="#i-sparkle"/></svg>
+      每道错题都是一次校准 Prompt 的机会
+    </footer>
+
+    <script src="assets/icons.js"></script>
+    <script src="assets/ui.js"></script>
+    <script src="../engine/storage.js"></script>
+    <script>
+      (function () {
+        const result = AiExamStorage.loadResult();
+        const root = document.getElementById("result-root");
+        if (!result) {
+          root.innerHTML =
+            '<div class="card empty"><div class="empty__icon"><svg class="icon"><use href="#i-file"/></svg></div>' +
+            "<h3>暂无成绩</h3><p class='meta'>请先<a href='exam.html'>参加考试</a>，交卷后即可查看报告。</p></div>";
+          return;
+        }
+        document.getElementById("btn-retry").addEventListener("click", function () {
+          AiExamStorage.clearPaper();
+        });
+
+        const TYPE_LABEL = { judge: "判断", single: "单选", multi: "多选" };
+        const TYPE_CLASS = { judge: "badge--judge", single: "badge--single", multi: "badge--multi" };
+        const LETTERS = "ABCDEFGH";
+        function escapeHtml(s) {
+          return String(s)
+            .replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;")
+            .replace(/"/g, "&quot;");
+        }
+        function fmt(arr) {
+          if (!arr || !arr.length) return "未作答";
+          return arr
+            .map(function (i) {
+              return LETTERS[i];
+            })
+            .join("、");
+        }
+
+        const heroClass = result.passed ? "is-pass" : "is-fail";
+        const verdict = result.passed ? "合格" : "不合格";
+        const reason = result.passed
+          ? "错题 " + result.wrongCount + " &lt; 5"
+          : "错题 " + result.wrongCount + " ≥ 5";
+        const ratio = result.correctCount / 20;
+
+        let html =
+          '<div class="score-hero ' +
+          heroClass +
+          '" data-reveal>' +
+          '<div class="gauge">' +
+          '<svg viewBox="0 0 190 190">' +
+          '<circle class="gauge__track" cx="95" cy="95" r="82" />' +
+          '<circle class="gauge__bar" id="gauge-bar" cx="95" cy="95" r="82" />' +
+          "</svg>" +
+          '<div class="gauge__center">' +
+          '<div class="score-num" id="score-num">0</div>' +
+          '<div class="gauge__sub">/ 20 题</div>' +
+          "</div></div>" +
+          '<div class="verdict">' +
+          (result.passed ? '<svg class="icon"><use href="#i-trophy"/></svg>' : '<svg class="icon"><use href="#i-alert"/></svg>') +
+          verdict +
+          "</div>" +
+          '<p class="meta" style="margin: var(--s-3) 0 0">' +
+          reason +
+          " · 合格条件：错 &lt; 5" +
+          (result.autoSubmit ? " · 超时自动交卷" : "") +
+          "</p></div>";
+
+        html +=
+          '<div class="stat-row" data-reveal style="--reveal-delay: 80ms">' +
+          '<div class="stat stat--ok"><span class="stat__label"><svg class="icon"><use href="#i-check-circle"/></svg>答对</span><span class="stat__value">' +
+          result.correctCount +
+          '</span></div>' +
+          '<div class="stat stat--bad"><span class="stat__label"><svg class="icon"><use href="#i-x-circle"/></svg>答错</span><span class="stat__value">' +
+          result.wrongCount +
+          '</span></div>' +
+          '<div class="stat"><span class="stat__label"><svg class="icon"><use href="#i-gauge"/></svg>正确率</span><span class="stat__value">' +
+          Math.round(ratio * 100) +
+          '%</span></div>' +
+          '<div class="stat"><span class="stat__label"><svg class="icon"><use href="#i-target"/></svg>合格线</span><span class="stat__value">≥16</span></div>' +
+          "</div>";
+
+        html += '<h2 class="card__title" style="margin-bottom: var(--s-4)" data-reveal><svg class="icon"><use href="#i-list"/></svg>逐题复盘</h2>';
+
+        result.details.forEach(function (d, idx) {
+          html +=
+            '<article class="review-item ' +
+            (d.correct ? "is-right" : "is-wrong") +
+            '" data-reveal><div class="q-meta"><strong>第 ' +
+            (idx + 1) +
+            ' 题</strong><span class="badge ' +
+            TYPE_CLASS[d.type] +
+            '">' +
+            TYPE_LABEL[d.type] +
+            '</span><span class="review-status">' +
+            (d.correct
+              ? '<svg class="icon"><use href="#i-check-circle"/></svg>正确'
+              : '<svg class="icon"><use href="#i-x-circle"/></svg>错误') +
+            '</span></div><p class="q-stem">' +
+            escapeHtml(d.stem) +
+            '</p><ul class="options">' +
+            d.options
+              .map(function (opt, oi) {
+                let cls = "option";
+                if (d.answer.indexOf(oi) !== -1) cls += " is-correct";
+                if (d.userAnswer.indexOf(oi) !== -1 && d.answer.indexOf(oi) === -1) cls += " is-wrong";
+                return (
+                  '<li class="' +
+                  cls +
+                  '" style="cursor:default"><span class="option-label">' +
+                  LETTERS[oi] +
+                  '</span><span class="option-text">' +
+                  escapeHtml(opt) +
+                  "</span></li>"
+                );
+              })
+              .join("") +
+            '</ul><p class="meta" style="margin-top: var(--s-3)">你的答案：<strong>' +
+            fmt(d.userAnswer) +
+            "</strong> · 正确答案：<strong>" +
+            fmt(d.answer) +
+            '</strong></p><div class="explain">' +
+            '<svg class="icon"><use href="#i-bulb"/></svg><span>' +
+            escapeHtml(d.explain) +
+            "</span></div></article>";
+        });
+
+        root.innerHTML = html;
+
+        // 动效：显现 + 仪表 + 数字滚动 + 合格彩带
+        document.querySelectorAll("[data-reveal]").forEach(function (el) {
+          el.classList.add("is-in");
+        });
+        const bar = document.getElementById("gauge-bar");
+        AiUI.animateGauge(bar, ratio);
+        AiUI.countUp(document.getElementById("score-num"), result.correctCount, { duration: 1200 });
+        if (result.passed) {
+          setTimeout(function () {
+            AiUI.confetti();
+          }, 500);
+          AiUI.toast("恭喜，考试合格！", "ok", 3200);
+        }
+      })();
+    </script>
+  </body>
+</html>

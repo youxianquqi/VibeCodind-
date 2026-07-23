@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>04 · BFC</title>
+    <link rel="stylesheet" href="../shared/base.css" />
+  </head>
+  <body>
+    <div class="wrap">
+      <p class="crumb"><a href="../index.html">路线图</a> · 第 4 课（选读加深）</p>
+      <h1>04 · BFC（Block Formatting Context）</h1>
+      <p class="lead">
+        这课<strong>先把概念读懂</strong>，注释填空只是确认你理解了。做布局时用得上，但不如 Flex/Grid 天天写。
+      </p>
+
+      <section class="lesson">
+        <h2>是什么（别被英文吓到）</h2>
+        <p>
+          <strong>BFC</strong> = <strong>B</strong>lock <strong>F</strong>ormatting <strong>C</strong>ontext
+          =「块级格式化上下文」。
+        </p>
+        <p>
+          可以把它想成一个<strong>独立的排版小房间</strong>：房间里面的盒子怎么摆，有自己的规则；
+          而且尽量<strong>不跟房间外面的布局搅在一起</strong>。
+        </p>
+      </section>
+
+      <section class="lesson">
+        <h2>为什么要学它（解决什么问题）</h2>
+        <ul>
+          <li>父元素里只有浮动（float）子元素时，父级高度塌陷 → 建 BFC 可包住浮动</li>
+          <li>相邻块的垂直 margin 合并（塌陷）→ BFC 可隔离</li>
+          <li>两栏：一栏 float，另一栏自适应且不重叠 → 自适应栏建 BFC</li>
+        </ul>
+        <p class="note">
+          现代布局更常用 Flex / Grid。BFC 是「底层原理 + 面试常问」，本阶段能用自己的话讲清即可。
+        </p>
+      </section>
+
+      <section class="lesson">
+        <h2>怎么创建 BFC（常见触发，记住几个就行）</h2>
+        <ul>
+          <li><code>overflow</code> 不为 <code>visible</code>（如 <code>hidden</code> / <code>auto</code>）</li>
+          <li><code>float</code> 不为 <code>none</code></li>
+          <li><code>position</code> 为 <code>absolute</code> 或 <code>fixed</code></li>
+          <li><code>display</code> 为 <code>flow-root</code> / <code>inline-block</code> / <code>flex</code> / <code>grid</code> 等</li>
+        </ul>
+        <p class="warn">
+          现在更推荐用 <code>display: flow-root</code> 开 BFC（语义就是「开一个块级格式化上下文」），
+          而不是为了清浮动硬写 <code>overflow: hidden</code>（可能裁切内容）。
+        </p>
+        <p class="ref">
+          参考：
+          <a href="https://developer.mozilla.org/zh-CN/docs/Web/CSS/CSS_display/Block_formatting_context" target="_blank" rel="noopener">MDN Block formatting context</a>
+        </p>
+      </section>
+
+      <section class="lesson todo-box">
+        <p>TODO · 打开 <span class="file">lessons/04-bfc.css</span>，只在注释里作答（本课几乎不用写生效样式）</p>
+        <ul>
+          <li>C1：默写英文全称</li>
+          <li>C2：列出至少两种触发方式（从上面抄也行，先记熟）</li>
+          <li>C3：用一句话说 BFC 能解决什么</li>
+        </ul>
+        <p class="check">自检：能不看笔记讲给别人听。下一课 → <a href="05-flex.html">05 Flex</a></p>
+      </section>
+    </div>
+  </body>
+</html>

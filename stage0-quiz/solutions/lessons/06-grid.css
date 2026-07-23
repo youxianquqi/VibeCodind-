@@ -1,0 +1,15 @@
+/* 06 答案 */
+/* E2: 200px 1fr */
+
+.grid > * {
+  background: #5b21b6;
+  color: #fff;
+  padding: 1rem;
+  text-align: center;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+}

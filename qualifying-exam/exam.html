@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>正式考试 · 作答中</title>
+    <link rel="stylesheet" href="shared/exam.css" />
+  </head>
+  <body>
+    <div class="exam-shell" id="exam-root">
+      <div class="exam-topbar">
+        <div>
+          <strong>正式考试</strong>
+          <span class="meta" id="progress-label">第 1 / 50 题</span>
+        </div>
+        <div class="timer" id="timer" aria-live="polite">45:00</div>
+        <div class="btn-row" style="margin: 0">
+          <button type="button" class="btn btn--ghost" id="btn-flag">标记</button>
+          <button type="button" class="btn btn--danger" id="btn-submit">交卷</button>
+        </div>
+      </div>
+
+      <main>
+        <article class="question-card" id="question-card">
+          <p class="meta">正在组卷…</p>
+        </article>
+        <div class="q-nav">
+          <button type="button" class="btn" id="btn-prev">上一题</button>
+          <button type="button" class="btn btn--primary" id="btn-next">下一题</button>
+        </div>
+      </main>
+
+      <aside class="answer-sheet" aria-label="答题卡">
+        <h3>答题卡</h3>
+        <div class="sheet-grid" id="sheet-grid"></div>
+        <p class="sheet-legend">
+          <span>■ 已答</span>
+          <span>□ 未答</span>
+          <span>黄框=标记</span>
+        </p>
+      </aside>
+    </div>
+
+    <!-- 题库 -->
+    <script src="bank/loader.js"></script>
+    <script src="bank/m1-semantic.js"></script>
+    <script src="bank/m2-box-position.js"></script>
+    <script src="bank/m3-bfc.js"></script>
+    <script src="bank/m4-flex.js"></script>
+    <script src="bank/m5-grid-responsive.js"></script>
+    <script src="bank/m6-js-basics.js"></script>
+    <script src="bank/m7-dom-events.js"></script>
+    <script src="bank/m8-js-advanced.js"></script>
+    <script src="bank/m9-js-async.js"></script>
+    <script src="bank/m10-ai-usage.js"></script>
+    <!-- 引擎 -->
+    <script src="engine/storage.js"></script>
+    <script src="engine/scoring.js"></script>
+    <script src="engine/timer.js"></script>
+    <script src="engine/draw.js"></script>
+    <script src="engine/exam-app.js"></script>
+  </body>
+</html>

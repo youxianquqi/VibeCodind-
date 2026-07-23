@@ -1,0 +1,66 @@
+/**
+ * 02 · 盒模型练习
+ * 先读完 02-box-model.html，再改本文件。
+ * 合法取值提醒：box-sizing 只能写 content-box 或 border-box。
+ * 不要写 width: padding-box（无效）。
+ */
+
+/* —— 演示用：两盒都 width:200px，都有较厚 padding+border —— */
+.compare {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.5rem;
+  align-items: flex-start;
+}
+
+.compare__item p {
+  margin: 0 0 0.35rem;
+  font-size: 0.9rem;
+  color: #57534e;
+}
+
+.box-content,
+.box-border {
+  width: 200px;
+  padding: 20px;
+  border: 10px solid #0f766e;
+  background: #ccfbf1;
+  color: #134e4a;
+  font-size: 0.85rem;
+}
+
+/*
+  TODO B1
+  左边演示「默认算法」：应使用 content-box（也可不写，因为默认就是它）。
+  把 ??? 换成：content-box
+*/
+.box-content {
+  box-sizing: ???;
+}
+
+/*
+  TODO B1b
+  右边演示「替代算法」：width 包含 padding + border。
+  把 ??? 换成：border-box
+*/
+.box-border {
+  box-sizing: ???;
+}
+
+/*
+  TODO B2 · 全局推荐写法（MDN）
+  目标：整站都用 border-box。
+  1）html 设为 border-box
+  2）所有元素（含伪元素）继承它
+
+  把下面两处 ??? 填对：
+*/
+html {
+  box-sizing: ???;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: ???; /* 提示：填 inherit，让它们继承 html 的设定 */
+}

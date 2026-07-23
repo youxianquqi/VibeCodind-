@@ -1,0 +1,42 @@
+/* 02 答案 */
+
+.compare {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.5rem;
+  align-items: flex-start;
+}
+
+.compare__item p {
+  margin: 0 0 0.35rem;
+  font-size: 0.9rem;
+  color: #57534e;
+}
+
+.box-content,
+.box-border {
+  width: 200px;
+  padding: 20px;
+  border: 10px solid #0f766e;
+  background: #ccfbf1;
+  color: #134e4a;
+  font-size: 0.85rem;
+}
+
+.box-content {
+  box-sizing: content-box;
+}
+
+.box-border {
+  box-sizing: border-box;
+}
+
+html {
+  box-sizing: border-box;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: inherit;
+}

@@ -1,0 +1,74 @@
+/**
+ * 05 · Flex 判据练习
+ * 合法提示：
+ *   display: flex
+ *   justify-content / align-items 常用：center | flex-start | flex-end | space-between …
+ *   侧栏：width + flex-shrink: 0
+ *   主区：flex: 1
+ */
+
+.item,
+.aside,
+.main {
+  color: #fff;
+  padding: 0.75rem 1rem;
+}
+
+.item {
+  background: #0f766e;
+}
+
+.aside {
+  background: #1e3a5f;
+}
+
+.main {
+  background: #3f6212;
+}
+
+/* ========== D1 居中 ========== */
+.box {
+  height: 160px;
+  border: 2px dashed #0f766e;
+  background: #fff;
+  /*
+    TODO D1
+    让 .item 水平+垂直居中。抄公式即可，但要自己敲一遍：
+      display: flex;
+      justify-content: center;
+      align-items: center;
+  */
+
+
+}
+
+/* ========== D2 两栏 ========== */
+.layout {
+  margin-top: 0.5rem;
+  min-height: 72px;
+  /*
+    TODO D2a · 变成 Flex 容器
+      display: flex;
+  */
+
+
+}
+
+.aside {
+  /*
+    TODO D2b · 固定宽且别被挤扁
+      width: 240px;
+      flex-shrink: 0;
+  */
+
+
+}
+
+.main {
+  /*
+    TODO D2c · 占满剩余
+      flex: 1;
+  */
+
+
+}

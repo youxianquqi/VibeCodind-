@@ -1,0 +1,153 @@
+/* 课页共用样式：已写好，各课不用改这里 */
+
+:root {
+  --ink: #1c1917;
+  --muted: #57534e;
+  --bg: #fafaf9;
+  --card: #ffffff;
+  --line: #e7e5e4;
+  --accent: #0f766e;
+  --accent-soft: #ccfbf1;
+  --warn: #9a3412;
+  --code-bg: #1c1917;
+  --code-ink: #e7e5e4;
+}
+
+/* 注意：故意不在这里写死 box-sizing。
+   第 2 课要你自己学会 content-box / border-box 的区别。 */
+
+body {
+  margin: 0;
+  font-family: "Segoe UI", "Noto Sans SC", "PingFang SC", sans-serif;
+  line-height: 1.7;
+  color: var(--ink);
+  background: var(--bg);
+}
+
+.wrap {
+  max-width: 42rem;
+  margin: 0 auto;
+  padding: 1.5rem 1.25rem 4rem;
+}
+
+.crumb {
+  font-size: 0.9rem;
+  color: var(--muted);
+  margin-bottom: 1rem;
+}
+
+.crumb a {
+  color: var(--accent);
+}
+
+h1 {
+  font-size: clamp(1.5rem, 4vw, 1.85rem);
+  margin: 0 0 0.5rem;
+  letter-spacing: -0.02em;
+}
+
+.lead {
+  color: var(--muted);
+  margin: 0 0 1.5rem;
+}
+
+.lesson {
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  padding: 1.25rem 1.35rem;
+  margin-bottom: 1.25rem;
+}
+
+.lesson h2 {
+  margin: 0 0 0.75rem;
+  font-size: 1.1rem;
+}
+
+.lesson h3 {
+  margin: 1.25rem 0 0.5rem;
+  font-size: 1rem;
+}
+
+.lesson p,
+.lesson li {
+  color: var(--ink);
+}
+
+.lesson ul {
+  padding-left: 1.2rem;
+  margin: 0.5rem 0;
+}
+
+.note {
+  background: var(--accent-soft);
+  border-left: 3px solid var(--accent);
+  padding: 0.65rem 0.9rem;
+  margin: 0.75rem 0;
+  font-size: 0.95rem;
+}
+
+.warn {
+  background: #ffedd5;
+  border-left: 3px solid var(--warn);
+  padding: 0.65rem 0.9rem;
+  margin: 0.75rem 0;
+  font-size: 0.95rem;
+}
+
+.ref a {
+  color: var(--accent);
+}
+
+code,
+.file {
+  font-family: Consolas, "Cascadia Code", monospace;
+  font-size: 0.9em;
+}
+
+.file {
+  display: inline-block;
+  background: #f5f5f4;
+  padding: 0.1rem 0.4rem;
+  border-radius: 2px;
+}
+
+pre.demo {
+  background: var(--code-bg);
+  color: var(--code-ink);
+  padding: 0.85rem 1rem;
+  overflow-x: auto;
+  font-size: 0.85rem;
+  line-height: 1.5;
+  border-radius: 2px;
+}
+
+.todo-box {
+  border: 2px dashed var(--accent);
+  padding: 1rem;
+  margin-top: 1rem;
+  background: #f0fdfa;
+}
+
+.todo-box > p:first-child {
+  margin-top: 0;
+  font-weight: 700;
+  color: var(--accent);
+}
+
+.check {
+  font-size: 0.9rem;
+  color: var(--muted);
+  margin-top: 1rem;
+}
+
+.nav-lessons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 1.5rem;
+}
+
+.nav-lessons a {
+  color: var(--accent);
+}

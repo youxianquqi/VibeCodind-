@@ -1,0 +1,487 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Aurora AI UI · 设计规范</title>
+    <link rel="stylesheet" href="assets/tokens.css" />
+    <link rel="stylesheet" href="assets/components.css" />
+    <script>
+      // 防主题闪烁
+      (function () {
+        const t = localStorage.getItem("ai_ui_theme");
+        if (t) document.documentElement.setAttribute("data-theme", t);
+      })();
+    </script>
+  </head>
+  <body>
+    <!-- 顶栏 -->
+    <header class="topbar">
+      <a class="brand" href="styleguide.html">
+        <span class="brand__mark"><svg class="icon"><use href="#i-sparkles"/></svg></span>
+        <span class="brand__name">Aurora AI UI</span>
+        <span class="brand__tag">设计规范 v1.0</span>
+      </a>
+      <div class="topbar__side">
+        <a class="btn btn--ghost btn--sm" href="index.html">页面模板</a>
+        <button type="button" class="btn btn--ghost btn--icon" data-theme-toggle aria-label="切换主题"></button>
+      </div>
+    </header>
+
+    <main class="wrap wrap--wide">
+      <!-- Hero -->
+      <section style="padding: var(--s-7) 0 var(--s-6); text-align: center" data-reveal>
+        <p class="chip" style="margin-bottom: var(--s-4)"><svg class="icon"><use href="#i-sparkle"/></svg>面向 AI 产品的界面设计系统</p>
+        <h1 class="display">为 <span class="grad-text">AI 编程合格考试</span><br />打造的全套 UI 模板</h1>
+        <p class="lead" style="max-width: 44rem; margin: 0 auto">
+          设计语言对齐主流 AI 产品：ChatGPT 的克制留白、Claude 的人文温度、DeepSeek 的科技蓝。
+          以 Aurora 极光渐变与 Sparkle 母题贯穿，深色优先、浅色完备，全链路响应式。
+        </p>
+        <div class="row" style="justify-content: center; margin-top: var(--s-5)">
+          <a class="btn btn--primary btn--lg" href="index.html">查看页面模板<svg class="icon"><use href="#i-arrow-right"/></svg></a>
+          <a class="btn btn--lg" href="#icons">浏览图标库</a>
+        </div>
+      </section>
+
+      <!-- 01 品牌 -->
+      <section class="spec-section" id="brand" data-reveal>
+        <h2><span class="num">01</span>品牌与母题</h2>
+        <div class="demo-row">
+          <div class="card row" style="gap: var(--s-5); flex: 1; min-width: 260px">
+            <span class="brand__mark" style="width: 56px; height: 56px; border-radius: 16px"><svg class="icon icon--lg"><use href="#i-sparkles"/></svg></span>
+            <div>
+              <strong>品牌标 · Sparkle Mark</strong>
+              <p class="meta" style="margin: 0.2rem 0 0">135° 极光渐变圆角方块 + 星芒图标，hover 时流光扫过。星芒（✦）是 AI 产品的通用语义符号。</p>
+            </div>
+          </div>
+          <div class="card row" style="gap: var(--s-5); flex: 1; min-width: 260px">
+            <div style="height: 56px; width: 120px; border-radius: 16px; background: var(--grad-brand); box-shadow: var(--glow-brand)"></div>
+            <div>
+              <strong>Aurora 渐变</strong>
+              <p class="meta" style="margin: 0.2rem 0 0">Iris 紫 → Azure 蓝 → Cyan 青，象征「智能 → 科技 → 活力」，用于主按钮、品牌标、进度与选中态。</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 02 配色 -->
+      <section class="spec-section" id="colors" data-reveal>
+        <h2><span class="num">02</span>配色方案 <span class="meta" style="font-weight: 400">点击色板复制色值</span></h2>
+        <h3 class="meta" style="margin-bottom: var(--s-3)">品牌色 ramp</h3>
+        <div class="swatch-grid" id="swatches-brand" style="margin-bottom: var(--s-5)"></div>
+        <h3 class="meta" style="margin-bottom: var(--s-3)">功能色</h3>
+        <div class="swatch-grid" id="swatches-semantic" style="margin-bottom: var(--s-5)"></div>
+        <h3 class="meta" style="margin-bottom: var(--s-3)">中性色（随主题切换）</h3>
+        <div class="swatch-grid" id="swatches-neutral"></div>
+      </section>
+
+      <!-- 03 字体 -->
+      <section class="spec-section" id="type" data-reveal>
+        <h2><span class="num">03</span>字体与排版</h2>
+        <div class="card stack">
+          <div class="row" style="justify-content: space-between; border-bottom: 1px solid var(--border); padding-bottom: var(--s-3)">
+            <span class="display" style="margin: 0">Display 展示标题</span><code>--fs-display · clamp(2rem, 5.5vw, 2.9rem) · 800</code>
+          </div>
+          <div class="row" style="justify-content: space-between; border-bottom: 1px solid var(--border); padding-bottom: var(--s-3)">
+            <h1 style="margin: 0">Heading 页面标题</h1><code>--fs-2xl · 800</code>
+          </div>
+          <div class="row" style="justify-content: space-between; border-bottom: 1px solid var(--border); padding-bottom: var(--s-3)">
+            <h2 style="margin: 0">Heading 区块标题</h2><code>--fs-xl · 700</code>
+          </div>
+          <div class="row" style="justify-content: space-between; border-bottom: 1px solid var(--border); padding-bottom: var(--s-3)">
+            <span>Body 正文 · AI 协作编程的正确打开方式</span><code>--fs-md · 400 · 1.7 行高</code>
+          </div>
+          <div class="row" style="justify-content: space-between; border-bottom: 1px solid var(--border); padding-bottom: var(--s-3)">
+            <span class="meta">Meta 辅助说明文字</span><code>--fs-sm · muted</code>
+          </div>
+          <div class="row" style="justify-content: space-between">
+            <span class="mono" style="font-size: var(--fs-lg)">20:00 · 16/20</span><code>--font-mono · 数字/计时专用</code>
+          </div>
+        </div>
+        <p class="note"><svg class="icon"><use href="#i-info"/></svg><span>字体栈：Inter → HarmonyOS Sans SC → PingFang SC → Microsoft YaHei；等宽：JetBrains Mono → Cascadia Code。字重 400/500/600/700/800，标题字距 -0.02em。</span></p>
+      </section>
+
+      <!-- 04 圆角与阴影 -->
+      <section class="spec-section" id="radius" data-reveal>
+        <h2><span class="num">04</span>圆角 · 阴影 · 光晕</h2>
+        <div class="demo-row" id="radius-demo"></div>
+        <div class="demo-row" id="shadow-demo"></div>
+      </section>
+
+      <!-- 05 图标 -->
+      <section class="spec-section" id="icons" data-reveal>
+        <h2><span class="num">05</span>图标库 <span class="meta" style="font-weight: 400">24px · 1.7 描边 · 圆角端点 · 点击复制名称</span></h2>
+        <div class="icon-grid" id="icon-grid"></div>
+        <p class="note"><svg class="icon"><use href="#i-bulb"/></svg><span>使用方式：<code>&lt;svg class="icon"&gt;&lt;use href="#i-check"/&gt;&lt;/svg&gt;</code>，或 JS 调用 <code>AiUI.icon('check')</code>。源文件 <code>assets/icons.svg</code> 可直接导入 Figma。</span></p>
+      </section>
+
+      <!-- 06 按钮 -->
+      <section class="spec-section" id="buttons" data-reveal>
+        <h2><span class="num">06</span>按钮</h2>
+        <div class="card stack">
+          <div class="demo-row" style="margin: 0">
+            <button class="btn btn--primary"><svg class="icon"><use href="#i-zap"/></svg>主要按钮</button>
+            <button class="btn btn--soft">柔和按钮</button>
+            <button class="btn">默认按钮</button>
+            <button class="btn btn--ghost">幽灵按钮</button>
+            <button class="btn btn--danger"><svg class="icon"><use href="#i-trash"/></svg>危险按钮</button>
+          </div>
+          <div class="demo-row" style="margin: 0">
+            <button class="btn btn--primary btn--sm">小号</button>
+            <button class="btn btn--primary">中号</button>
+            <button class="btn btn--primary btn--lg">大号</button>
+            <button class="btn btn--icon" data-tip="图标按钮"><svg class="icon"><use href="#i-sliders"/></svg></button>
+            <button class="btn" disabled>禁用态</button>
+          </div>
+          <p class="meta" style="margin: 0">交互：hover 上浮 1px + 阴影 · 按下 scale(.98) · 点击涟漪扩散 · 主按钮渐变 + 品牌光晕</p>
+        </div>
+      </section>
+
+      <!-- 07 徽章 -->
+      <section class="spec-section" id="badges" data-reveal>
+        <h2><span class="num">07</span>徽章与标签</h2>
+        <div class="card demo-row" style="margin-bottom: var(--s-4)">
+          <span class="badge badge--judge">判断</span>
+          <span class="badge badge--single">单选</span>
+          <span class="badge badge--multi">多选</span>
+          <span class="badge badge--ok">合格</span>
+          <span class="badge badge--bad">不合格</span>
+          <span class="badge badge--warn">待复核</span>
+          <span class="badge badge--info">提示</span>
+          <span class="badge badge--plain">草稿</span>
+        </div>
+        <div class="card demo-row" style="margin: 0">
+          <span class="chip"><svg class="icon"><use href="#i-layers"/></svg>题库 <strong>100+</strong></span>
+          <span class="chip"><svg class="icon"><use href="#i-list"/></svg>每卷 <strong>20</strong> 题</span>
+          <span class="chip"><svg class="icon"><use href="#i-timer"/></svg>限时 <strong>20:00</strong></span>
+          <span class="chip"><svg class="icon"><use href="#i-target"/></svg>错满 <strong>5</strong> 题不合格</span>
+        </div>
+      </section>
+
+      <!-- 08 表单 -->
+      <section class="spec-section" id="forms" data-reveal>
+        <h2><span class="num">08</span>表单控件</h2>
+        <div class="card demo-row">
+          <label class="field"><span>下拉选择</span>
+            <select><option>全题库</option><option>错题本</option></select>
+          </label>
+          <label class="field"><span>文本输入</span>
+            <input type="text" placeholder="输入搜索关键词…" />
+          </label>
+          <div class="field"><span class="field-label">分段选择</span>
+            <div class="segmented" id="seg-demo">
+              <button type="button" class="is-active">练习</button>
+              <button type="button">模拟</button>
+              <button type="button">背题</button>
+            </div>
+          </div>
+          <div class="field"><span class="field-label">开关</span>
+            <button type="button" class="switch" role="switch" aria-checked="true" aria-label="开关演示"></button>
+          </div>
+        </div>
+      </section>
+
+      <!-- 09 题目选项 -->
+      <section class="spec-section" id="options" data-reveal>
+        <h2><span class="num">09</span>题目选项组件 <span class="meta" style="font-weight: 400">可点击体验</span></h2>
+        <div class="question-card">
+          <div class="q-meta"><span class="badge badge--single">单选</span><span>示例题</span></div>
+          <p class="q-stem">把公司私有仓库地址粘贴到在线 AI 对话里，最安全的结果是？</p>
+          <ul class="options" id="demo-options">
+            <li class="option" data-oi="0"><input type="radio" name="demo" value="0" /><span class="option-label">A</span><span class="option-text">模型不会保存，所以没风险</span></li>
+            <li class="option" data-oi="1"><input type="radio" name="demo" value="1" /><span class="option-text">B 选项样式 · 未选中</span></li>
+            <li class="option is-selected" data-oi="2"><input type="radio" name="demo" value="2" checked /><span class="option-label">C</span><span class="option-text">选中态 · 渐变描边 + 光晕 + 字母块填充</span></li>
+            <li class="option is-correct" data-oi="3"><input type="radio" name="demo" value="3" /><span class="option-label">D</span><span class="option-text">正确态（练习/复盘）· 绿色语义</span></li>
+            <li class="option is-wrong" data-oi="4"><input type="radio" name="demo" value="4" /><span class="option-label">E</span><span class="option-text">错误态 · 红色语义 + 抖动反馈</span></li>
+          </ul>
+          <div class="feedback feedback--ok" style="margin-top: var(--s-4)">
+            <svg class="icon"><use href="#i-check-circle"/></svg>
+            <div>正确。答案：C<div class="explain"><svg class="icon"><use href="#i-bulb"/></svg><span>解析块：私有代码 / 仓库地址属于敏感信息，发送到第三方在线模型前必须脱敏。</span></div></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 10 进度与加载 -->
+      <section class="spec-section" id="progress" data-reveal>
+        <h2><span class="num">10</span>进度 · 计时 · 加载</h2>
+        <div class="demo-row" style="align-items: stretch">
+          <div class="card" style="flex: 1; min-width: 240px">
+            <h3 class="card__title"><svg class="icon"><use href="#i-chart"/></svg>线性进度</h3>
+            <div class="progress progress--shimmer" style="margin-bottom: var(--s-3)"><i style="width: 65%"></i></div>
+            <div class="progress"><i style="width: 30%; background: var(--grad-ok)"></i></div>
+            <p class="meta" style="margin: var(--s-3) 0 0">Shimmer 流光表示进行中</p>
+          </div>
+          <div class="card" style="flex: 1; min-width: 240px">
+            <h3 class="card__title"><svg class="icon"><use href="#i-timer"/></svg>倒计时环（考试页）</h3>
+            <div class="row" style="gap: var(--s-5)">
+              <div class="ring" id="demo-ring">
+                <svg viewBox="0 0 44 44">
+                  <defs><linearGradient id="ring-grad" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#6e63f6"/><stop offset=".5" stop-color="#4d8dff"/><stop offset="1" stop-color="#22d3ee"/></linearGradient></defs>
+                  <circle class="ring__track" cx="22" cy="22" r="19"/>
+                  <circle class="ring__bar" cx="22" cy="22" r="19"/>
+                </svg>
+                <span class="ring__text" id="demo-ring-text">16:40</span>
+              </div>
+              <div class="stack" style="gap: var(--s-2)">
+                <span class="meta">≥5min 渐变 · &lt;5min 琥珀 · &lt;1min 红色脉冲</span>
+                <button class="btn btn--sm" id="demo-ring-btn">播放倒计时动画</button>
+              </div>
+            </div>
+          </div>
+          <div class="card" style="flex: 1; min-width: 240px">
+            <h3 class="card__title"><svg class="icon"><use href="#i-refresh"/></svg>骨架屏</h3>
+            <div class="stack" style="gap: var(--s-3)">
+              <div class="skeleton" style="height: 20px; width: 55%"></div>
+              <div class="skeleton" style="height: 14px"></div>
+              <div class="skeleton" style="height: 14px; width: 82%"></div>
+              <div class="skeleton" style="height: 40px"></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 11 答题卡 -->
+      <section class="spec-section" id="sheet" data-reveal>
+        <h2><span class="num">11</span>答题卡</h2>
+        <div class="answer-sheet" style="position: static; max-height: none; max-width: 300px">
+          <h3><svg class="icon"><use href="#i-grid"/></svg>答题卡<span class="sheet-count">12 / 20</span></h3>
+          <div class="sheet-progress"><i style="width: 60%"></i></div>
+          <div class="sheet-grid">
+            <button class="sheet-btn is-answered">1</button><button class="sheet-btn is-answered">2</button><button class="sheet-btn is-answered is-flagged">3</button><button class="sheet-btn is-answered">4</button><button class="sheet-btn is-answered">5</button>
+            <button class="sheet-btn is-answered">6</button><button class="sheet-btn is-current">7</button><button class="sheet-btn">8</button><button class="sheet-btn">9</button><button class="sheet-btn is-flagged">10</button>
+            <button class="sheet-btn is-answered">11</button><button class="sheet-btn is-answered">12</button><button class="sheet-btn">13</button><button class="sheet-btn">14</button><button class="sheet-btn">15</button>
+            <button class="sheet-btn">16</button><button class="sheet-btn">17</button><button class="sheet-btn">18</button><button class="sheet-btn">19</button><button class="sheet-btn">20</button>
+          </div>
+          <p class="sheet-legend">
+            <span><i class="legend-dot legend-dot--answered"></i>已答</span>
+            <span><i class="legend-dot legend-dot--flag"></i>标记</span>
+            <span><i class="legend-dot legend-dot--current"></i>当前题</span>
+          </p>
+        </div>
+      </section>
+
+      <!-- 12 反馈 -->
+      <section class="spec-section" id="feedback-demo" data-reveal>
+        <h2><span class="num">12</span>反馈组件 <span class="meta" style="font-weight: 400">Toast / Modal / 彩带</span></h2>
+        <div class="card demo-row" style="margin: 0">
+          <button class="btn" data-toast="ok">成功 Toast</button>
+          <button class="btn" data-toast="bad">失败 Toast</button>
+          <button class="btn" data-toast="info">信息 Toast</button>
+          <button class="btn btn--soft" id="demo-modal">打开确认弹窗</button>
+          <button class="btn btn--primary" id="demo-confetti"><svg class="icon"><use href="#i-sparkles"/></svg>合格彩带</button>
+        </div>
+      </section>
+
+      <!-- 13 空状态 -->
+      <section class="spec-section" id="empty" data-reveal>
+        <h2><span class="num">13</span>空状态</h2>
+        <div class="card empty">
+          <div class="empty__icon"><svg class="icon"><use href="#i-book"/></svg></div>
+          <h3>错题本还是空的</h3>
+          <p class="meta">去练习模式做几道题，答错的题会自动收进来。</p>
+          <div class="btn-row" style="justify-content: center"><a class="btn btn--primary" href="practice.html">开始练习</a></div>
+        </div>
+      </section>
+
+      <!-- 14 动效 -->
+      <section class="spec-section" id="motion" data-reveal>
+        <h2><span class="num">14</span>动效规范</h2>
+        <div class="card">
+          <ul>
+            <li><strong>时长</strong>：<code>--dur-1 120ms</code> 微交互 · <code>--dur-2 220ms</code> 状态切换 · <code>--dur-3 360ms</code> 进出场 · <code>--dur-4 600ms</code> 强调</li>
+            <li><strong>曲线</strong>：<code>--ease cubic-bezier(.22,1,.36,1)</code> 通用缓出 · <code>--spring cubic-bezier(.34,1.4,.64,1)</code> 弹性（涟漪/弹窗/答题卡）</li>
+            <li><strong>入场</strong>：页面 fade+rise · 卡片滚动 stagger 显现（<code>data-reveal</code>）· 题目切换上滑渐入</li>
+            <li><strong>反馈</strong>：选项错误抖动 · 倒计时最后 1 分钟脉冲 · 合格触发彩带 + 仪表描边动画 + 分数滚动</li>
+            <li><strong>克制</strong>：遵循 <code>prefers-reduced-motion</code>，用户减动效时全部动画降至 0.01ms</li>
+          </ul>
+        </div>
+      </section>
+
+      <!-- 15 响应式 -->
+      <section class="spec-section" id="responsive" data-reveal>
+        <h2><span class="num">15</span>响应式适配</h2>
+        <div class="card">
+          <ul>
+            <li><strong>&gt;920px</strong>：考试页双栏（题目 + 侧边答题卡），顶栏完整展开</li>
+            <li><strong>≤920px</strong>：单栏；答题卡转为底部抽屉，右下角渐变悬浮按钮「答题卡」唤起，含背 blur 背景</li>
+            <li><strong>≤640px</strong>：容器收窄、卡片内边距压缩、按钮组转为整行均分、成绩仪表 190→160px</li>
+            <li><strong>字号流式</strong>：标题使用 <code>clamp()</code> 随视口平滑缩放；触控目标 ≥ 36px</li>
+            <li><strong>深浅主题</strong>：跟随系统 + 手动切换（localStorage 持久化），令牌级双套色板</li>
+          </ul>
+        </div>
+      </section>
+
+      <!-- 16 页面模板 -->
+      <section class="spec-section" id="pages" data-reveal>
+        <h2><span class="num">16</span>页面模板</h2>
+        <div class="demo-row" style="align-items: stretch">
+          <a class="mode-card" style="flex: 1; min-width: 200px" href="index.html">
+            <span class="mode-card__icon"><svg class="icon"><use href="#i-home"/></svg></span>
+            <span class="mode-card__title">首页<svg class="icon"><use href="#i-arrow-up-right"/></svg></span>
+            <p class="mode-card__desc">品牌 Hero + 规则 + 模式入口 + 历史成绩</p>
+          </a>
+          <a class="mode-card" style="flex: 1; min-width: 200px" href="exam.html">
+            <span class="mode-card__icon"><svg class="icon"><use href="#i-timer"/></svg></span>
+            <span class="mode-card__title">考试页<svg class="icon"><use href="#i-arrow-up-right"/></svg></span>
+            <p class="mode-card__desc">环形倒计时 + 答题卡 + 题目卡片</p>
+          </a>
+          <a class="mode-card" style="flex: 1; min-width: 200px" href="practice.html">
+            <span class="mode-card__icon"><svg class="icon"><use href="#i-edit"/></svg></span>
+            <span class="mode-card__title">练习页<svg class="icon"><use href="#i-arrow-up-right"/></svg></span>
+            <p class="mode-card__desc">即时反馈 + 错题本管理</p>
+          </a>
+          <a class="mode-card" style="flex: 1; min-width: 200px" href="result.html">
+            <span class="mode-card__icon"><svg class="icon"><use href="#i-trophy"/></svg></span>
+            <span class="mode-card__title">成绩页<svg class="icon"><use href="#i-arrow-up-right"/></svg></span>
+            <p class="mode-card__desc">仪表评分 + 逐题复盘 + 彩带</p>
+          </a>
+        </div>
+      </section>
+    </main>
+
+    <footer class="footer">
+      <svg class="icon"><use href="#i-sparkle"/></svg>
+      Aurora AI UI · 与 ChatGPT / Claude / DeepSeek 同源的 AI 产品视觉语言
+    </footer>
+
+    <script src="assets/icons.js"></script>
+    <script src="assets/ui.js"></script>
+    <script>
+      (function () {
+        /* 色板 */
+        function swatch(container, name, cssVar, hex) {
+          const el = document.createElement("div");
+          el.className = "swatch";
+          el.innerHTML =
+            '<div class="swatch__color" style="background:' + cssVar + '"></div>' +
+            '<div class="swatch__body"><div class="swatch__name">' + name + '</div>' +
+            '<div class="swatch__hex">' + hex + "</div></div>";
+          el.addEventListener("click", function () {
+            const done = function () { AiUI.toast("已复制 " + hex, "ok", 1600); };
+            if (navigator.clipboard) navigator.clipboard.writeText(hex).then(done, done);
+            else done();
+          });
+          document.getElementById(container).appendChild(el);
+        }
+        [
+          ["Iris 智能紫", "linear-gradient(135deg,#6e63f6,#8b8cf9)", "#6E63F6"],
+          ["Azure 科技蓝", "linear-gradient(135deg,#4d8dff,#60a5fa)", "#4D8DFF"],
+          ["Cyan 活力青", "linear-gradient(135deg,#22d3ee,#67e8f9)", "#22D3EE"],
+          ["Aurora 渐变", "linear-gradient(135deg,#6e63f6,#4d8dff 52%,#22d3ee)", "#6E63F6→#22D3EE"],
+        ].forEach(function (s) { swatch("swatches-brand", s[0], s[1], s[2]); });
+        [
+          ["Success 合格", "#34d399", "#34D399"],
+          ["Danger 不合格", "#fb7185", "#FB7185"],
+          ["Warning 警示", "#fbbf24", "#FBBF24"],
+          ["Info 信息", "#60a5fa", "#60A5FA"],
+          ["判断题 Iris", "#8b8cf9", "#8B8CF9"],
+          ["单选题 Sky", "#38bdf8", "#38BDF8"],
+          ["多选题 Fuchsia", "#f0abfc", "#F0ABFC"],
+        ].forEach(function (s) { swatch("swatches-semantic", s[0], s[1], s[2]); });
+        [
+          ["背景 BG", "var(--bg)", "--bg"],
+          ["卡片 Surface", "var(--surface)", "--surface"],
+          ["边框 Border", "var(--border-strong)", "--border"],
+          ["主文本 Ink", "var(--ink)", "--ink"],
+          ["次文本 Muted", "var(--muted)", "--muted"],
+        ].forEach(function (s) { swatch("swatches-neutral", s[0], s[1], s[2]); });
+
+        /* 圆角/阴影演示 */
+        const radiusDemo = document.getElementById("radius-demo");
+        [["--r-sm · 8px", "8px"], ["--r-md · 12px", "12px"], ["--r-lg · 16px", "16px"], ["--r-xl · 20px", "20px"], ["--r-full", "999px"]].forEach(function (r) {
+          const d = document.createElement("div");
+          d.style.cssText = "width:96px;height:72px;background:var(--surface-2);border:1px solid var(--border-strong);display:grid;place-items:center;font-size:var(--fs-xs);color:var(--muted);border-radius:" + r[1];
+          d.textContent = r[0];
+          radiusDemo.appendChild(d);
+        });
+        const shadowDemo = document.getElementById("shadow-demo");
+        [["--shadow-sm", "var(--shadow-sm)"], ["--shadow-md", "var(--shadow-md)"], ["--shadow-lg", "var(--shadow-lg)"], ["--glow-brand", "var(--glow-brand-lg)"]].forEach(function (s) {
+          const d = document.createElement("div");
+          d.style.cssText = "width:130px;height:72px;background:var(--surface);border:1px solid var(--border);border-radius:var(--r-md);display:grid;place-items:center;font-size:var(--fs-xs);color:var(--muted);box-shadow:" + s[1];
+          d.textContent = s[0];
+          shadowDemo.appendChild(d);
+        });
+
+        /* 图标网格 */
+        const grid = document.getElementById("icon-grid");
+        const names = AiIcons.SPRITE.match(/id="i-([a-z-]+)"/g).map(function (s) { return s.slice(4, -1); });
+        names.forEach(function (n) {
+          const cell = document.createElement("div");
+          cell.className = "icon-cell";
+          cell.innerHTML = AiUI.icon(n) + "<span>" + n + "</span>";
+          cell.addEventListener("click", function () {
+            const done = function () { AiUI.toast("已复制图标名 " + n, "ok", 1500); };
+            if (navigator.clipboard) navigator.clipboard.writeText(n).then(done, done);
+            else done();
+          });
+          grid.appendChild(cell);
+        });
+
+        /* 分段选择器 */
+        document.querySelectorAll("#seg-demo button").forEach(function (b) {
+          b.addEventListener("click", function () {
+            document.querySelectorAll("#seg-demo button").forEach(function (x) { x.classList.remove("is-active"); });
+            b.classList.add("is-active");
+          });
+        });
+
+        /* 选项演示：点击前三个可切换选中 */
+        document.querySelectorAll("#demo-options .option").forEach(function (el, idx) {
+          if (idx > 2) { el.style.pointerEvents = "none"; return; }
+          el.addEventListener("click", function () {
+            document.querySelectorAll("#demo-options .option").forEach(function (x, xi) {
+              if (xi <= 2) {
+                x.classList.remove("is-selected");
+                x.querySelector("input").checked = false;
+              }
+            });
+            el.classList.add("is-selected");
+            el.querySelector("input").checked = true;
+          });
+        });
+
+        /* 计时环演示 */
+        const ringBar = document.querySelector("#demo-ring .ring__bar");
+        const ringText = document.getElementById("demo-ring-text");
+        document.getElementById("demo-ring-btn").addEventListener("click", function () {
+          const total = 20 * 60;
+          let t = total;
+          const ring = document.getElementById("demo-ring");
+          const c = 2 * Math.PI * 19;
+          ringBar.style.strokeDasharray = c;
+          const iv = setInterval(function () {
+            t -= 12;
+            if (t <= 0) { t = 0; clearInterval(iv); }
+            const m = Math.floor(t / 60), s = t % 60;
+            ringText.textContent = String(m).padStart(2, "0") + ":" + String(s).padStart(2, "0");
+            ringBar.style.strokeDashoffset = c * (1 - t / total);
+            ring.classList.toggle("is-warn", t < 300 && t >= 60);
+            ring.classList.toggle("is-danger", t < 60);
+            if (t === 0) AiUI.toast("时间到，自动交卷", "warn");
+          }, 120);
+        });
+
+        /* Toast 演示 */
+        document.querySelectorAll("[data-toast]").forEach(function (b) {
+          b.addEventListener("click", function () {
+            const t = b.getAttribute("data-toast");
+            AiUI.toast({ ok: "答案已保存", bad: "第 7 题回答错误", info: "距离交卷还有 5 分钟" }[t], t);
+          });
+        });
+
+        /* Modal 演示 */
+        document.getElementById("demo-modal").addEventListener("click", function () {
+          AiUI.confirm({ title: "确定交卷？", message: "还有 3 题未作答，交卷后不可修改。", okText: "交卷", danger: true }).then(function (ok) {
+            AiUI.toast(ok ? "已交卷" : "继续作答", ok ? "ok" : "info");
+          });
+        });
+
+        /* 彩带演示 */
+        document.getElementById("demo-confetti").addEventListener("click", function () {
+          AiUI.confetti();
+          AiUI.toast("恭喜，考试合格！", "ok");
+        });
+      })();
+    </script>
+  </body>
+</html>

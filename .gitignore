@@ -1,0 +1,35 @@
+# dependencies
+node_modules/
+**/node_modules/
+
+# logs & caches
+*.log
+npm-debug.log*
+.pnpm-debug.log*
+.cache/
+dist/
+.DS_Store
+Thumbs.db
+*.local
+
+# env / secrets
+.env
+.env.*
+!.env.example
+credentials.json
+*.pem
+
+# nested repo backups (do not publish)
+.git.bak/
+**/.git.bak/
+
+# editor
+.idea/
+.vscode/
+*.swp
+*~
+
+# OS / temp
+__pycache__/
+*.tmp
+.temp/

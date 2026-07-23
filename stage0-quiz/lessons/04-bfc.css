@@ -1,0 +1,27 @@
+/**
+ * 04 · BFC 理解确认（只改注释，不用写布局 CSS）
+ * 答案必须能从 04-bfc.html 课文里找到，禁止瞎编术语。
+ */
+
+/*
+  TODO C1
+  BFC 英文全称（三个词）：
+  // Block Formatting Context
+  你写：
+  //
+*/
+
+/*
+  TODO C2
+  写出至少两种创建 BFC 的方式（从课文列表里选）：
+  示例格式：overflow: hidden; display: flex;
+  你写：
+  //
+*/
+
+/*
+  TODO C3
+  BFC 常用来解决什么？（关键词任选：清浮动 / margin 合并 / 两栏不重叠）
+  你写：
+  //
+*/

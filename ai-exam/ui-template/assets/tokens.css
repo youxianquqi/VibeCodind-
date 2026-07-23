@@ -1,0 +1,143 @@
+/* ============================================================
+   Aurora AI UI · Design Tokens  v1.0
+   参考 ChatGPT(克制) / Claude(温度) / DeepSeek(科技感) 的设计语言
+   深色优先 · 支持 [data-theme="light"] 浅色主题
+   ============================================================ */
+
+:root {
+  /* ---------- 品牌色 · Aurora 渐变 ramp ---------- */
+  --iris: #6e63f6;      /* 紫 · 智能 */
+  --azure: #4d8dff;     /* 蓝 · 科技 (DeepSeek 系) */
+  --cyan: #22d3ee;      /* 青 · 活力 */
+  --mint: #2dd4bf;
+
+  --grad-brand: linear-gradient(135deg, #6e63f6 0%, #4d8dff 52%, #22d3ee 100%);
+  --grad-brand-soft: linear-gradient(135deg, rgba(110, 99, 246, 0.16), rgba(77, 141, 255, 0.16), rgba(34, 211, 238, 0.16));
+  --grad-text: linear-gradient(100deg, #a5a0ff 0%, #7fb2ff 48%, #6fe3f4 100%);
+  --grad-ok: linear-gradient(135deg, #34d399, #2dd4bf);
+  --grad-bad: linear-gradient(135deg, #fb7185, #fbbf24);
+
+  /* ---------- 功能色 ---------- */
+  --ok: #34d399;
+  --ok-ink: #6ee7b7;
+  --ok-bg: rgba(52, 211, 153, 0.12);
+  --bad: #fb7185;
+  --bad-ink: #fda4af;
+  --bad-bg: rgba(251, 113, 133, 0.12);
+  --warn: #fbbf24;
+  --warn-ink: #fcd34d;
+  --warn-bg: rgba(251, 191, 36, 0.12);
+  --info: #60a5fa;
+  --info-ink: #93c5fd;
+  --info-bg: rgba(96, 165, 250, 0.12);
+
+  /* ---------- 题型色 ---------- */
+  --t-judge: #8b8cf9;
+  --t-judge-bg: rgba(139, 140, 249, 0.14);
+  --t-single: #38bdf8;
+  --t-single-bg: rgba(56, 189, 248, 0.14);
+  --t-multi: #f0abfc;
+  --t-multi-bg: rgba(240, 171, 252, 0.13);
+
+  /* ---------- 中性色 · 深色 ---------- */
+  --bg: #0a0d14;
+  --bg-2: #0e121c;
+  --surface: #12151f;
+  --surface-2: #171b28;
+  --surface-3: #1d2231;
+  --glass: rgba(18, 21, 31, 0.72);
+  --border: rgba(255, 255, 255, 0.08);
+  --border-strong: rgba(255, 255, 255, 0.16);
+  --ink: #e8ebf4;
+  --ink-2: #b7bdd0;
+  --muted: #8a92a9;
+  --faint: #5c6478;
+  --on-brand: #ffffff;
+
+  /* ---------- 阴影与光晕 ---------- */
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.3), 0 2px 8px rgba(0, 0, 0, 0.24);
+  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.32), 0 12px 32px rgba(0, 0, 0, 0.28);
+  --shadow-lg: 0 12px 40px rgba(0, 0, 0, 0.45), 0 24px 64px rgba(0, 0, 0, 0.35);
+  --glow-brand: 0 6px 24px -6px rgba(96, 122, 255, 0.55), 0 0 0 1px rgba(255, 255, 255, 0.06) inset;
+  --glow-brand-lg: 0 12px 40px -8px rgba(96, 122, 255, 0.65);
+  --ring-focus: 0 0 0 3px rgba(96, 165, 250, 0.35);
+
+  /* ---------- 字体 ---------- */
+  --font-sans: "Inter", "HarmonyOS Sans SC", "PingFang SC", "Microsoft YaHei", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-mono: "JetBrains Mono", "Cascadia Code", "SF Mono", Consolas, monospace;
+  --fs-xs: 0.75rem;
+  --fs-sm: 0.875rem;
+  --fs-md: 1rem;
+  --fs-lg: 1.125rem;
+  --fs-xl: 1.375rem;
+  --fs-2xl: clamp(1.5rem, 4vw, 2rem);
+  --fs-display: clamp(2rem, 5.5vw, 2.9rem);
+
+  /* ---------- 圆角 ---------- */
+  --r-sm: 8px;
+  --r-md: 12px;
+  --r-lg: 16px;
+  --r-xl: 20px;
+  --r-full: 999px;
+
+  /* ---------- 间距 ---------- */
+  --s-1: 4px;
+  --s-2: 8px;
+  --s-3: 12px;
+  --s-4: 16px;
+  --s-5: 24px;
+  --s-6: 32px;
+  --s-7: 48px;
+  --s-8: 64px;
+
+  /* ---------- 动效 ---------- */
+  --dur-1: 120ms;
+  --dur-2: 220ms;
+  --dur-3: 360ms;
+  --dur-4: 600ms;
+  --ease: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+  --spring: cubic-bezier(0.34, 1.4, 0.64, 1);
+
+  /* ---------- 布局 ---------- */
+  --maxw: 70rem;
+  --maxw-narrow: 50rem;
+  --topbar-h: 60px;
+  --z-topbar: 40;
+  --z-fab: 50;
+  --z-overlay: 90;
+  --z-toast: 100;
+}
+
+/* ---------- 浅色主题 ---------- */
+[data-theme="light"] {
+  --bg: #f5f6fa;
+  --bg-2: #eef0f6;
+  --surface: #ffffff;
+  --surface-2: #f7f8fc;
+  --surface-3: #eef0f7;
+  --glass: rgba(255, 255, 255, 0.78);
+  --border: rgba(15, 23, 42, 0.09);
+  --border-strong: rgba(15, 23, 42, 0.18);
+  --ink: #161b28;
+  --ink-2: #3c4356;
+  --muted: #66708a;
+  --faint: #9aa2b8;
+
+  --ok-bg: rgba(5, 150, 105, 0.1);
+  --bad-bg: rgba(225, 29, 72, 0.08);
+  --warn-bg: rgba(217, 119, 6, 0.1);
+  --info-bg: rgba(37, 99, 235, 0.08);
+  --t-judge-bg: rgba(99, 102, 241, 0.1);
+  --t-single-bg: rgba(2, 132, 199, 0.1);
+  --t-multi-bg: rgba(192, 38, 211, 0.09);
+  --grad-text: linear-gradient(100deg, #6e63f6 0%, #3b76f6 48%, #0ea5c8 100%);
+  --grad-brand-soft: linear-gradient(135deg, rgba(110, 99, 246, 0.1), rgba(77, 141, 255, 0.1), rgba(34, 211, 238, 0.1));
+
+  --shadow-sm: 0 1px 2px rgba(15, 23, 42, 0.06), 0 2px 8px rgba(15, 23, 42, 0.05);
+  --shadow-md: 0 4px 12px rgba(15, 23, 42, 0.07), 0 12px 32px rgba(15, 23, 42, 0.08);
+  --shadow-lg: 0 12px 40px rgba(15, 23, 42, 0.12), 0 24px 64px rgba(15, 23, 42, 0.1);
+  --glow-brand: 0 6px 24px -8px rgba(96, 122, 255, 0.45);
+  --glow-brand-lg: 0 12px 40px -10px rgba(96, 122, 255, 0.5);
+  --ring-focus: 0 0 0 3px rgba(59, 130, 246, 0.3);
+}

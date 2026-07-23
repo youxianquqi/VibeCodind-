@@ -1,0 +1,34 @@
+/**
+ * 06 · Grid 练习
+ * 合法提示：
+ *   display: grid | inline-grid
+ *   grid-template-columns: 1fr 1fr 1fr  或  repeat(3, 1fr)
+ *   gap: 16px
+ */
+
+.grid > * {
+  background: #5b21b6;
+  color: #fff;
+  padding: 1rem;
+  text-align: center;
+}
+
+.grid {
+  /*
+    TODO E1
+    三列等宽，间距 16px：
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+  */
+
+
+}
+
+/*
+  TODO E2（只写在注释）
+  左 200px、右占满剩余，grid-template-columns 的值是？
+  标准答案：200px 1fr
+  你写：
+  //
+*/

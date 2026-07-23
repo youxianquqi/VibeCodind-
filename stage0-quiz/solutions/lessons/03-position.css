@@ -1,0 +1,27 @@
+/* 03 答案 */
+/* P1: static, relative, absolute, fixed, sticky */
+/* P3: absolute→最近定位祖先；relative→自身原位置 */
+
+.stage {
+  position: relative;
+  height: 120px;
+  border: 2px dashed #a8a29e;
+  background: #f5f5f4;
+  margin: 0.5rem 0;
+}
+
+.stage__label {
+  padding: 0.5rem;
+  font-size: 0.85rem;
+  color: #57534e;
+}
+
+.child {
+  background: #0f766e;
+  color: #fff;
+  padding: 0.4rem 0.6rem;
+  font-size: 0.85rem;
+  position: absolute;
+  top: 0;
+  right: 0;
+}

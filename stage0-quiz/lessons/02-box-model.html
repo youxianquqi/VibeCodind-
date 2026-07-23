@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>02 · 盒模型与 box-sizing</title>
+    <link rel="stylesheet" href="../shared/base.css" />
+    <link rel="stylesheet" href="02-box-model.css" />
+  </head>
+  <body>
+    <div class="wrap">
+      <p class="crumb"><a href="../index.html">路线图</a> · 第 2 课</p>
+      <h1>02 · 盒模型与 box-sizing</h1>
+      <p class="lead">本课目标：搞清「width 量的是哪一层」，再写全局 border-box。先读完再打开 CSS。</p>
+
+      <section class="lesson">
+        <h2>1. 每个元素都是一层盒子</h2>
+        <p>从里到外（记住顺序）：</p>
+        <pre class="demo">content（内容）
+  → padding（内边距，内容与边框之间）
+    → border（边框）
+      → margin（外边距，和其他元素的空隙）</pre>
+        <p>
+          <code>margin</code> 在「壳」外面，<strong>永远不算进</strong> <code>width</code>。
+        </p>
+      </section>
+
+      <section class="lesson">
+        <h2>2. width 有两种算法（只认这两个词）</h2>
+        <ul>
+          <li>
+            <code>content-box</code>（默认）：你写的 <code>width</code> <strong>只量 content</strong>。
+            再加 padding / border，盒子会<strong>变得更宽</strong>。
+          </li>
+          <li>
+            <code>border-box</code>：你写的 <code>width</code> <strong>量到 border 外缘</strong>。
+            padding / border 挤在这宽度里面，内容区变小，<strong>总宽不变</strong>。
+          </li>
+        </ul>
+        <p class="warn">
+          <strong>严禁误区：</strong>没有 <code>width: padding-box</code> 这种写法。
+          <code>padding-box</code> 是 <code>background-clip</code> 等属性的取值，
+          <strong>不能</strong>写在 <code>width</code> 后面。
+          <code>box-sizing</code> 的合法值主要就是：<code>content-box</code> | <code>border-box</code>。
+        </p>
+        <p class="ref">
+          参考：
+          <a href="https://developer.mozilla.org/zh-CN/docs/Learn_web_development/Core/Styling_basics/Box_model" target="_blank" rel="noopener">MDN 盒模型</a>
+          ·
+          <a href="https://developer.mozilla.org/zh-CN/docs/Web/CSS/box-sizing" target="_blank" rel="noopener">box-sizing</a>
+        </p>
+      </section>
+
+      <section class="lesson">
+        <h2>3. 看对比（两个盒子都声明 width: 200px）</h2>
+        <p>下方左：默认 content-box（会被撑宽）；右：border-box（视觉上更接近 200）。</p>
+        <div class="compare">
+          <div class="compare__item">
+            <p>content-box</p>
+            <div class="box-content">宽？</div>
+          </div>
+          <div class="compare__item">
+            <p>border-box</p>
+            <div class="box-border">宽？</div>
+          </div>
+        </div>
+      </section>
+
+      <section class="lesson">
+        <h2>4. 为什么要全局 border-box</h2>
+        <p>
+          做侧栏、栅格时，你想的是「这个栏一共多宽」，不是「内容区多宽」。
+          所以项目里几乎都会打开 alternative box model。
+        </p>
+        <p class="note">
+          MDN 推荐写法（注意：<code>box-sizing</code> <strong>默认不继承</strong>，所以要让子元素
+          <code>inherit</code>）：
+        </p>
+        <pre class="demo">html {
+  box-sizing: border-box;
+}
+*, *::before, *::after {
+  box-sizing: inherit;
+}</pre>
+      </section>
+
+      <section class="lesson todo-box">
+        <p>TODO · 打开 <span class="file">lessons/02-box-model.css</span></p>
+        <ul>
+          <li>B1：把 <code>???</code> 换成 <code>content-box</code> 或 <code>border-box</code>（只能二选一）</li>
+          <li>B2：按注释补全 MDN 全局写法</li>
+        </ul>
+        <p class="check">自检：右侧 .box-border 总视觉宽度应接近 200px；保存刷新本页。下一课 → <a href="03-position.html">03 定位</a></p>
+      </section>
+    </div>
+  </body>
+</html>

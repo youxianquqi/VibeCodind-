@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>AI 编程考 · 练习</title>
+    <link rel="stylesheet" href="assets/tokens.css" />
+    <link rel="stylesheet" href="assets/components.css" />
+    <script>
+      (function () {
+        const t = localStorage.getItem("ai_ui_theme");
+        if (t) document.documentElement.setAttribute("data-theme", t);
+      })();
+    </script>
+  </head>
+  <body>
+    <header class="topbar">
+      <a class="brand" href="index.html">
+        <span class="brand__mark"><svg class="icon"><use href="#i-sparkles"/></svg></span>
+        <span class="brand__name">AI 编程合格考试</span>
+        <span class="brand__tag">练习模式</span>
+      </a>
+      <div class="topbar__side">
+        <a class="btn btn--ghost btn--sm" href="index.html"><svg class="icon"><use href="#i-home"/></svg>首页</a>
+        <button type="button" class="btn btn--ghost btn--icon" data-theme-toggle aria-label="切换主题"></button>
+      </div>
+    </header>
+
+    <main class="wrap">
+      <section style="padding-top: var(--s-6)" data-reveal>
+        <h1>练习模式</h1>
+        <p class="lead">即时反馈对错与解析。可练全题库或错题本。</p>
+      </section>
+
+      <!-- 练习设置 -->
+      <section class="card" id="setup-card" data-reveal>
+        <h2 class="card__title"><svg class="icon"><use href="#i-sliders"/></svg>练习设置</h2>
+        <div class="demo-row" style="margin-bottom: var(--s-2)">
+          <label class="field">
+            <span>题目来源</span>
+            <select id="source">
+              <option value="all">全题库</option>
+              <option value="wrong">错题本</option>
+            </select>
+          </label>
+          <label class="field">
+            <span>题量</span>
+            <select id="count">
+              <option value="5">5 题</option>
+              <option value="10" selected>10 题</option>
+              <option value="20">20 题</option>
+            </select>
+          </label>
+        </div>
+        <div class="btn-row">
+          <button type="button" class="btn btn--primary" id="btn-start"><svg class="icon"><use href="#i-zap"/></svg>开始练习</button>
+          <button type="button" class="btn btn--ghost" id="btn-clear"><svg class="icon"><use href="#i-trash"/></svg>清空错题本</button>
+        </div>
+        <p class="meta" id="wrong-count" style="margin-top: var(--s-3)"></p>
+      </section>
+
+      <!-- 作答区 -->
+      <section id="practice-area" hidden style="padding-bottom: var(--s-6)">
+        <article class="question-card" id="question-card"></article>
+        <div id="feedback" hidden></div>
+        <div class="btn-row">
+          <button type="button" class="btn btn--primary" id="btn-check"><svg class="icon"><use href="#i-check"/></svg>检查</button>
+          <button type="button" class="btn" id="btn-next" hidden>下一题<svg class="icon"><use href="#i-chevron-right"/></svg></button>
+          <button type="button" class="btn btn--ghost" id="btn-remove" hidden><svg class="icon"><use href="#i-bookmark"/></svg>移出错题本</button>
+        </div>
+        <p class="meta" id="practice-progress" style="margin-top: var(--s-3)"></p>
+      </section>
+    </main>
+
+    <footer class="footer">
+      <svg class="icon"><use href="#i-sparkle"/></svg>
+      答错的题会自动收进错题本
+    </footer>
+
+    <script src="assets/icons.js"></script>
+    <script src="assets/ui.js"></script>
+    <script src="../bank/loader.js"></script>
+    <script src="../bank/ai-usage.js"></script>
+    <script src="../engine/storage.js"></script>
+    <script src="../engine/scoring.js"></script>
+    <script src="../engine/draw.js"></script>
+    <script>
+      (function () {
+        const TYPE_LABEL = { judge: "判断", single: "单选", multi: "多选" };
+        const TYPE_CLASS = { judge: "badge--judge", single: "badge--single", multi: "badge--multi" };
+        const LETTERS = "ABCDEFGH";
+        if (new URLSearchParams(location.search).get("mode") === "wrong") {
+          document.getElementById("source").value = "wrong";
+        }
+
+        let queue = [];
+        let index = 0;
+        let checked = false;
+
+        function escapeHtml(s) {
+          return String(s)
+            .replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;")
+            .replace(/"/g, "&quot;");
+        }
+
+        function updateWrong() {
+          document.getElementById("wrong-count").textContent =
+            "错题本 " + AiExamStorage.loadWrong().length + " 题";
+        }
+
+        function pool() {
+          return document.getElementById("source").value === "wrong"
+            ? AiExamStorage.loadWrong()
+            : AiExamDraw.collectBank();
+        }
+
+        function start() {
+          const p = pool();
+          if (!p.length) {
+            AiUI.toast("题库/错题本为空", "warn");
+            return;
+          }
+          queue = AiExamDraw.drawPractice(p, Number(document.getElementById("count").value));
+          index = 0;
+          document.getElementById("setup-card").hidden = true;
+          document.getElementById("practice-area").hidden = false;
+          render();
+        }
+
+        function render() {
+          const q = queue[index];
+          checked = false;
+          document.getElementById("practice-progress").textContent =
+            "第 " + (index + 1) + " / " + queue.length + " 题";
+          document.getElementById("feedback").hidden = true;
+          document.getElementById("btn-check").hidden = false;
+          document.getElementById("btn-next").hidden = true;
+          document.getElementById("btn-remove").hidden = true;
+          const isMulti = q.type === "multi";
+          document.getElementById("question-card").innerHTML =
+            '<div class="q-meta"><span class="badge ' +
+            TYPE_CLASS[q.type] +
+            '">' +
+            TYPE_LABEL[q.type] +
+            '</span></div><p class="q-stem">' +
+            escapeHtml(q.stem) +
+            '</p><ul class="options" id="options">' +
+            q.options
+              .map(function (opt, oi) {
+                return (
+                  '<li class="option" data-oi="' +
+                  oi +
+                  '"><input type="' +
+                  (isMulti ? "checkbox" : "radio") +
+                  '" name="pq" value="' +
+                  oi +
+                  '" /><span class="option-label">' +
+                  LETTERS[oi] +
+                  '</span><span class="option-text">' +
+                  escapeHtml(opt) +
+                  "</span></li>"
+                );
+              })
+              .join("") +
+            "</ul>";
+          document.querySelectorAll("#options .option").forEach(function (el) {
+            el.addEventListener("click", function (e) {
+              if (checked || e.target.tagName === "INPUT") return;
+              const input = el.querySelector("input");
+              if (isMulti) input.checked = !input.checked;
+              else input.checked = true;
+            });
+          });
+        }
+
+        function getUser() {
+          const selected = [];
+          document.querySelectorAll("#options input").forEach(function (inp) {
+            if (inp.checked) selected.push(Number(inp.value));
+          });
+          return selected;
+        }
+
+        document.getElementById("btn-start").addEventListener("click", start);
+        document.getElementById("btn-check").addEventListener("click", function () {
+          const q = queue[index];
+          const user = getUser();
+          const ok = AiExamScoring.equal(q.answer, user);
+          checked = true;
+          const fb = document.getElementById("feedback");
+          fb.hidden = false;
+          fb.className = "feedback " + (ok ? "feedback--ok" : "feedback--bad");
+          fb.innerHTML =
+            AiUI.icon(ok ? "check-circle" : "x-circle") +
+            "<div>" +
+            (ok ? "回答正确。" : "回答错误。") +
+            " 答案：" +
+            q.answer
+              .map(function (i) {
+                return LETTERS[i];
+              })
+              .join("、") +
+            '<div class="explain">' +
+            AiUI.icon("bulb") +
+            "<span>" +
+            escapeHtml(q.explain) +
+            "</span></div></div>";
+          document.querySelectorAll("#options .option").forEach(function (el) {
+            const oi = Number(el.getAttribute("data-oi"));
+            if (q.answer.indexOf(oi) !== -1) el.classList.add("is-correct");
+            if (user.indexOf(oi) !== -1 && q.answer.indexOf(oi) === -1) el.classList.add("is-wrong");
+          });
+          document.getElementById("btn-check").hidden = true;
+          document.getElementById("btn-next").hidden = false;
+          if (!ok) {
+            AiExamStorage.addWrong([q]);
+            updateWrong();
+            AiUI.toast("已收入错题本", "bad", 1800);
+          } else if (document.getElementById("source").value === "wrong") {
+            document.getElementById("btn-remove").hidden = false;
+          }
+        });
+        document.getElementById("btn-next").addEventListener("click", function () {
+          if (index >= queue.length - 1) {
+            AiUI.toast("练习结束，干得漂亮", "ok");
+            setTimeout(function () {
+              location.href = "practice.html";
+            }, 900);
+            return;
+          }
+          index++;
+          render();
+        });
+        document.getElementById("btn-remove").addEventListener("click", function () {
+          AiExamStorage.removeWrong(queue[index].id);
+          updateWrong();
+          document.getElementById("btn-remove").hidden = true;
+          AiUI.toast("已移出错题本", "ok", 1800);
+        });
+        document.getElementById("btn-clear").addEventListener("click", function () {
+          AiUI.confirm({
+            title: "清空错题本？",
+            message: "错题本中的所有题目将被移除，此操作不可恢复。",
+            okText: "清空",
+            danger: true,
+            icon: "trash",
+          }).then(function (ok) {
+            if (ok) {
+              AiExamStorage.clearWrong();
+              updateWrong();
+              AiUI.toast("错题本已清空", "ok");
+            }
+          });
+        });
+        updateWrong();
+      })();
+    </script>
+  </body>
+</html>

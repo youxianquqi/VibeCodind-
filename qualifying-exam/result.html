@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>考试结果</title>
+    <link rel="stylesheet" href="shared/exam.css" />
+  </head>
+  <body>
+    <div class="wrap wrap--wide">
+      <div id="result-root">
+        <p class="meta">加载中…</p>
+      </div>
+      <div class="btn-row">
+        <a class="btn btn--primary" href="index.html">返回首页</a>
+        <a class="btn" href="exam.html" id="btn-retry">再考一次</a>
+        <a class="btn btn--ghost" href="practice.html?mode=wrong">去错题本</a>
+      </div>
+    </div>
+
+    <script src="engine/storage.js"></script>
+    <script src="engine/scoring.js"></script>
+    <script>
+      (function () {
+        const result = ExamStorage.loadResult();
+        const root = document.getElementById("result-root");
+        if (!result) {
+          root.innerHTML =
+            '<p class="lead">暂无成绩。请先完成一次<a href="exam.html">正式考试</a>。</p>';
+          return;
+        }
+
+        document.getElementById("btn-retry").addEventListener("click", function () {
+          ExamStorage.clearPaper();
+        });
+
+        const TYPE_LABEL = { judge: "判断", single: "单选", multi: "多选" };
+        const LETTERS = "ABCDEFGH";
+
+        function escapeHtml(s) {
+          return String(s)
+            .replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;")
+            .replace(/"/g, "&quot;");
+        }
+
+        function fmtAns(arr) {
+          if (!arr || !arr.length) return "未作答";
+          return arr.map(function (i) {
+            return LETTERS[i];
+          }).join("、");
+        }
+
+        const heroClass = result.passed ? "is-pass" : "is-fail";
+        const verdict = result.passed ? "合格" : "不合格";
+        const autoNote = result.autoSubmit ? "（超时自动交卷）" : "";
+
+        let html =
+          '<div class="score-hero ' +
+          heroClass +
+          '">' +
+          '<div class="score-num">' +
+          result.score +
+          "</div>" +
+          '<div class="meta">满分 ' +
+          result.total +
+          " · 合格线 " +
+          result.passLine +
+          "</div>" +
+          '<div class="verdict">' +
+          verdict +
+          autoNote +
+          "</div>" +
+          "</div>";
+
+        html +=
+          '<section class="card"><h2>逐题解析</h2><p class="meta">错题已写入错题本。共 ' +
+          result.details.length +
+          " 题，错 " +
+          result.wrongList.length +
+          " 题。</p></section>";
+
+        result.details.forEach(function (d, idx) {
+          const status = d.correct ? "is-right" : "is-wrong";
+          const mark = d.correct ? "✓ 正确" : "✗ 错误";
+          html +=
+            '<article class="review-item ' +
+            status +
+            '">' +
+            '<div class="q-meta"><strong>第 ' +
+            (idx + 1) +
+            " 题</strong><span>" +
+            d.module +
+            "</span><span>" +
+            TYPE_LABEL[d.type] +
+            "</span><span>" +
+            mark +
+            "（" +
+            d.earned +
+            "/" +
+            d.max +
+            "）</span></div>" +
+            '<p class="q-stem">' +
+            escapeHtml(d.stem) +
+            "</p>" +
+            "<ul class=\"options\">" +
+            d.options
+              .map(function (opt, oi) {
+                const isKey = d.answer.indexOf(oi) !== -1;
+                const isUser = d.userAnswer.indexOf(oi) !== -1;
+                let cls = "option";
+                if (isKey) cls += " is-correct";
+                if (isUser && !isKey) cls += " is-wrong";
+                if (isUser) cls += " is-selected";
+                return (
+                  '<li class="' +
+                  cls +
+                  '"><span class="option-label">' +
+                  LETTERS[oi] +
+                  ".</span><span class=\"option-text\">" +
+                  escapeHtml(opt) +
+                  "</span></li>"
+                );
+              })
+              .join("") +
+            "</ul>" +
+            '<p class="meta">你的答案：' +
+            fmtAns(d.userAnswer) +
+            " · 正确答案：" +
+            fmtAns(d.answer) +
+            "</p>" +
+            '<div class="explain">' +
+            escapeHtml(d.explain) +
+            "</div>" +
+            "</article>";
+        });
+
+        root.innerHTML = html;
+      })();
+    </script>
+  </body>
+</html>

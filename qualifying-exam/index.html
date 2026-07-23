@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>前端 AI 编程合格考试</title>
+    <link rel="stylesheet" href="shared/exam.css" />
+  </head>
+  <body>
+    <div class="wrap">
+      <h1>前端 <span>AI</span> 编程合格考试</h1>
+      <p class="lead">
+        对标科目一逻辑：随机抽题、限时作答、交卷后统一判分。覆盖阶段 0 HTML/CSS、阶段 1
+        JS 基础，以及 AI 协作正确使用方式。
+      </p>
+
+      <section class="card">
+        <h2>考试规则</h2>
+        <ul>
+          <li>共 <strong>50</strong> 题/卷（10 模块 × 每模块 2 判断 + 2 单选 + 1 多选）</li>
+          <li>题库约 <strong>500</strong> 道（每模块 20 判断 + 20 单选 + 10 多选），每次随机抽取</li>
+          <li>判断 1 分 · 单选 2 分 · 多选 4 分（多选须全对，少选/多选/错选 0 分）</li>
+          <li>满分 100 · <strong>≥90 合格</strong> · 限时 <strong>45 分钟</strong></li>
+          <li>考试中不显示对错；可跳题、标记；时间到自动交卷</li>
+        </ul>
+        <p class="note">多选题请仔细核对选项数量；交卷前可用答题卡检查未答题目。</p>
+      </section>
+
+      <section class="card">
+        <h2>开始</h2>
+        <div class="btn-row">
+          <a class="btn btn--primary" href="exam.html" id="btn-start">正式考试</a>
+          <a class="btn" href="practice.html">练习模式</a>
+          <a class="btn btn--ghost" href="practice.html?mode=wrong">错题本</a>
+        </div>
+      </section>
+
+      <section class="card">
+        <h2>最近成绩</h2>
+        <ul class="history-list" id="history-list">
+          <li class="meta">暂无记录</li>
+        </ul>
+      </section>
+
+      <section class="card">
+        <h2>模块范围</h2>
+        <ol>
+          <li>M1 语义化 HTML</li>
+          <li>M2 盒模型 / 定位</li>
+          <li>M3 BFC</li>
+          <li>M4 Flex</li>
+          <li>M5 Grid + 响应式</li>
+          <li>M6 JS 基础语法</li>
+          <li>M7 DOM 与事件</li>
+          <li>M8 进阶概念</li>
+          <li>M9 异步</li>
+          <li>M10 AI 协作正确使用</li>
+        </ol>
+      </section>
+    </div>
+
+    <script src="engine/storage.js"></script>
+    <script>
+      (function () {
+        const list = document.getElementById("history-list");
+        const history = ExamStorage.loadHistory();
+        if (!history.length) return;
+        list.innerHTML = history
+          .slice(0, 8)
+          .map(function (h) {
+            const tag = h.passed
+              ? '<span class="pass-tag">合格</span>'
+              : '<span class="fail-tag">不合格</span>';
+            const t = new Date(h.at).toLocaleString();
+            return (
+              "<li><span>" +
+              t +
+              "</span><span>" +
+              h.score +
+              " / 100 " +
+              tag +
+              "</span></li>"
+            );
+          })
+          .join("");
+
+        document.getElementById("btn-start").addEventListener("click", function (e) {
+          // 正式考试从 exam 页重新抽题；清除旧试卷提示
+          if (ExamStorage.loadPaper() && ExamStorage.loadPaper().answers) {
+            const ok = confirm("检测到未交卷记录，确定放弃并开始新考试？");
+            if (!ok) {
+              e.preventDefault();
+              return;
+            }
+            ExamStorage.clearPaper();
+          }
+        });
+      })();
+    </script>
+  </body>
+</html>
